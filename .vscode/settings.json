@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.html": "django-html",
+        "*.eex": "eex",
+        "*.heex": "html",
+        "*.mq5": "cpp"
+    }
+}
