@@ -99,6 +99,19 @@ void handle_new_hourly(){
       //--- MA_Buffer[0] is current candle EMA      
       Print("handle_new_hourly::MA_Buffer[0]: ", MA_Buffer[0]);              
       //Print("Media_Movil[0] = ", MA_Buffer[0] ,"\n","Media_Movil[1] = ",DoubleToString(MA_Buffer[1],6));
+      
+      //--- START handle povot point
+      double xHigh = iHigh(tradingSymbol, PERIOD_D1, 1);
+      double xLow = iLow(tradingSymbol, PERIOD_D1, 1);
+      double xClose = iClose(tradingSymbol, PERIOD_D1, 1);
+
+      double vPP = (xHigh+xLow+xClose) / 3;
+      double vR1 = vPP+(vPP-xLow);
+      double vS1 = vPP-(xHigh - vPP);
+      Print("vR1: ", vR1);
+      Print("vS1: ", vS1);
+      //--- END handle povot point
+      
       if(todayBias == "BUY") {
          if(!requiredClosedBothSideOfEMA) {
             //--- check if H1 candle closed below EMA9
@@ -187,3 +200,4 @@ bool isAlreadyPlaceATradeToday(){
     Print("isAlreadyPlaceATradeToday::is placed trade Today: ", tradePlacedToday);
     return tradePlacedToday;
 }
+
