@@ -15,12 +15,19 @@
 input float    fixedLotSize=1.0;
 input float    riskPercentPerTrade=1.0;
 input bool     useRiskPercentPerTrade=false;
-input int      emaLength=9;
+input int      emaPeriod=9;
 input string   timeFrame="H1";
 input string   tradingSymbol="GBPJPY";
 input bool     requiredClosedBothSideOfEMA=false;
 //--- required pips from previous day to trade today some broker bullish/ some other bearish
 input int      minPipsRequiredFromYesterday=0; 
+
+
+datetime previousHour = 0;
+//--- related to EMA
+int    emaHandle;
+double MA_Buffer[];
+
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
@@ -29,37 +36,15 @@ int OnInit()
   {
 //---
 //--- todo copy it to ontick later
-
-   string todayBias = get_daily_bias();
-   Print("main::todayBias: ", todayBias);
-   double pp_up, pp_down;
+   Print("-------------------on init start-------------------"); 
+   // TimeCurrent() (which returns the current time in seconds since 1970)
+   previousHour = TimeCurrent() / (60 * 60);
+   emaHandle = iMA(tradingSymbol,PERIOD_H1,9,0,MODE_EMA,PRICE_CLOSE);
+   ArraySetAsSeries(MA_Buffer,true);
    
+   handle_new_hourly();
  
-   if (!isAlreadyPlaceATradeToday()) {
-      if(todayBias == "BUY") {
-         if(!requiredClosedBothSideOfEMA) {
-            //--- check if H1 candle closed below EMA9
-            
-            
-         }else{
-           // TODO: might not need handle this           
-         }
-   
-      }else if(todayBias == "SELL") {
-         if(!requiredClosedBothSideOfEMA) {
-            //--- check if H1 candle closed above EMA9
-         }else{
-           // TODO:
-         }
-   
-      }else if(todayBias == "NOBIAS"){
-         Print("No bias, no trade!");
-      }
-      
-   }else {
-      Print("Done for the day, Trade already placed!");
-   }
-   
+  
   
    
 //---
@@ -78,7 +63,14 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
   {
-//---
+   // get current hour
+   datetime currentHour = TimeCurrent() / (60 * 60);
+   if(currentHour != previousHour) {
+      // when new hourly candle start to form
+      handle_new_hourly();
+      previousHour = currentHour;
+   }
+      
    //
   }
 //+------------------------------------------------------------------+
@@ -91,11 +83,55 @@ void OnTrade()
   }
 //+------------------------------------------------------------------+
 
+void handle_new_hourly(){
+   string todayBias = get_daily_bias();
+   Print("main::todayBias: ", todayBias);
+   
+    if (!isAlreadyPlaceATradeToday() && todayBias != "NOBIAS") {
+      //--- Get the current Bid price
+      double currentBid = SymbolInfoDouble(tradingSymbol, SYMBOL_BID);   
+      //--- Get the current Ask price
+      double currentAsk = SymbolInfoDouble(tradingSymbol, SYMBOL_ASK);
+      Print("handle_new_hourly::Current Bid: ", currentBid);
+      Print("handle_new_hourly::Current Ask: ", currentAsk);              
+      
+      if(CopyBuffer(emaHandle,0,0,2,MA_Buffer)!=2) return;  
+      //--- MA_Buffer[0] is current candle EMA      
+      Print("handle_new_hourly::MA_Buffer[0]: ", MA_Buffer[0]);              
+      //Print("Media_Movil[0] = ", MA_Buffer[0] ,"\n","Media_Movil[1] = ",DoubleToString(MA_Buffer[1],6));
+      if(todayBias == "BUY") {
+         if(!requiredClosedBothSideOfEMA) {
+            //--- check if H1 candle closed below EMA9
+           
+            if (currentAsk < MA_Buffer[0]){
+               Print("handle_new_hourly::START LONG as currentAsk < ema9_hourly: ", currentAsk < MA_Buffer[0]);
+            }
+            
+         }else{
+           // TODO: might not need handle this           
+         }
+      }else if(todayBias == "SELL") {
+         if(!requiredClosedBothSideOfEMA) {
+            //--- check if H1 candle closed above EMA9
+             if (currentAsk > MA_Buffer[0]){
+               Print("handle_new_hourly::START SELL as currentBid > ema9_hourly: ", currentAsk > MA_Buffer[0]);
+            }
+         }else{
+           // TODO:
+         }
+   
+      }
+      
+   }else {
+      Print("Done for the day, Trade already placed!");
+   }
+}
+
 
 string get_daily_bias() {
    double previous_day_close_price, previous_day_open_price;          
    // Get previous trading day
-   datetime prev_day = iTime(tradingSymbol, PERIOD_D1, 0);
+   datetime prev_day = iTime(tradingSymbol, PERIOD_D1, 1);
    
    // Get shift for previous trading day's close price
    int shift = iBarShift(tradingSymbol, PERIOD_D1, prev_day);
@@ -120,10 +156,10 @@ string get_daily_bias() {
    if(MathAbs(previous_day_range_pips) < minPipsRequiredFromYesterday)  {
       bias = "NOBIAS";
    }
-   Print("previous_day_range_pips: ", previous_day_range_pips);
-   Print("minPipsRequiredFromYesterday: ", minPipsRequiredFromYesterday);
+   Print("get_daily_bias::previous_day_range_pips: ", previous_day_range_pips);
+   Print("get_daily_bias::minPipsRequiredFromYesterday: ", minPipsRequiredFromYesterday);
    
-   Print("day ", prev_day, " bias value: " , bias);
+   Print("get_daily_bias:: prev_day ", prev_day, " bias value: " , bias);
    return bias;
 }
 
@@ -147,7 +183,7 @@ bool isAlreadyPlaceATradeToday(){
         }
     }            
 
-    Print("isAlreadyPlaceATradeToday today_start_time value:", today_start_time);
-    Print("isAlreadyPlaceATradeToday is placed trade Today: ", tradePlacedToday);
+    Print("isAlreadyPlaceATradeToday::today_start_time value:", today_start_time);
+    Print("isAlreadyPlaceATradeToday::is placed trade Today: ", tradePlacedToday);
     return tradePlacedToday;
 }
