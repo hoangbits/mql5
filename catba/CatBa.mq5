@@ -12,8 +12,9 @@
 
 
 //--- input parameters
-input float    fixedLotSize=1.0;
-input float    riskPercentPerTrade=1.0;
+
+input double    lotSize=0.2;
+input double    riskPercentPerTrade=1.0;
 input bool     useRiskPercentPerTrade=false;
 input int      emaPeriod=9;
 input string   timeFrame="H1";
@@ -108,8 +109,11 @@ void handle_new_hourly(){
       double vPP = (xHigh+xLow+xClose) / 3;
       double vR1 = vPP+(vPP-xLow);
       double vS1 = vPP-(xHigh - vPP);
-      Print("vR1: ", vR1);
-      Print("vS1: ", vS1);
+      //Print("handle_new_hourly:: xHigh: ", xHigh);
+      //Print("handle_new_hourly::xLow: ", xLow);
+      //Print("handle_new_hourly::xClose: ", xClose);
+      Print("vhandle_new_hourly:: R1: ", vR1);
+      Print("handle_new_hourly:: vS1: ", vS1);
       //--- END handle povot point
       
       if(todayBias == "BUY") {
@@ -118,18 +122,39 @@ void handle_new_hourly(){
            
             if (currentAsk < MA_Buffer[0]){
                Print("handle_new_hourly::START LONG as currentAsk < ema9_hourly: ", currentAsk < MA_Buffer[0]);
+               double sl = vS1;
+               double potential_profit = vR1 - currentAsk;
+               double potential_loss = currentAsk - vS1;
+               if(potential_loss > potential_profit) {
+                 sl = currentAsk - potential_profit;
+               } 
+               place_trade(ORDER_TYPE_BUY, sl, vR1);
+            }
+            else {
+            Print("handle_new_hourly:: looking for BUY but currentASL is not < EMA9 hourly ");
             }
             
          }else{
-           // TODO: might not need handle this           
+           // TODO: might not need handle this 
+           Print("not handle buy both side yet");          
          }
       }else if(todayBias == "SELL") {
          if(!requiredClosedBothSideOfEMA) {
             //--- check if H1 candle closed above EMA9
-             if (currentAsk > MA_Buffer[0]){
+            if (currentBid > MA_Buffer[0]){
                Print("handle_new_hourly::START SELL as currentBid > ema9_hourly: ", currentAsk > MA_Buffer[0]);
+               double sl = vR1;
+               double potential_profit = currentBid - vS1;
+               double potential_loss = vR1 - currentBid;
+               if(potential_loss > potential_profit) {
+                 sl = currentBid + potential_profit;
+               }                               
+               place_trade(ORDER_TYPE_SELL, sl, vS1);                              
+            } else {
+              Print("handle_new_hourly:: looking for sell but currentbid is not > EMA9 hourly ");
             }
          }else{
+            Print("not handle SELL both side yet");        
            // TODO:
          }
    
@@ -201,3 +226,49 @@ bool isAlreadyPlaceATradeToday(){
     return tradePlacedToday;
 }
 
+
+
+
+void place_trade(ENUM_ORDER_TYPE orderType,double stopLossPrice,double takeProfitPrice) {
+
+    MqlTradeRequest request = {};
+    MqlTradeResult result = {};
+    ZeroMemory(request);  // Initialize memory to zero
+    ZeroMemory(result);
+    MqlTick latest_price;   // To get the latest price
+    SymbolInfoTick(tradingSymbol, latest_price);
+    
+    request.action = TRADE_ACTION_DEAL;
+    request.symbol = tradingSymbol;
+    request.volume = lotSize;
+    request.type = orderType;
+    if(orderType == ORDER_TYPE_BUY) {
+      request.price = latest_price.ask;
+    }else if (orderType == ORDER_TYPE_SELL) {
+      request.price = latest_price.bid;
+    }
+    Print("place_trade::", orderType ,"  at price:", request.price);
+    Print("place_trade::Stop Loss set at:", stopLossPrice);
+    Print("place_trade::Take Profit set at:", takeProfitPrice);
+    request.deviation = 10;
+    request.magic = 123456;
+
+    request.sl = stopLossPrice;
+    request.tp = takeProfitPrice;
+   
+  
+   Print(SymbolInfoInteger(Symbol(), SYMBOL_FILLING_MODE));
+
+   //--- send the request
+   if(!OrderSend(request,result)){
+     PrintFormat("OrderSend error %d",GetLastError());     // if unable to send the request, output the error code
+   }
+   
+   //--- information about the operation
+   //--- when DEBUG also check Journal tab(beside of expert tab.)
+   PrintFormat("retcode=%u  deal=%I64u  order=%I64u",result.retcode,result.deal,result.order);
+   Print("place_trade::result.comment: ",result.comment);
+   Print("place_trade::result.request_id: ",result.request_id);
+   Print("place_trade::result.retcode_external", result.retcode_external);
+   
+}

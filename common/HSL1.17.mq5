@@ -218,7 +218,7 @@ void OnTick() {
             Print("requiest change SL", sl);
             Print("requiest change TP", tp);
             if(!OrderSend(request,result))
-            PrintFormat("OrderSend error %d",GetLastError());  // if unable to send the request, output the error code
+              PrintFormat("OrderSend error %d",GetLastError());  // if unable to send the request, output the error code
             //--- information about the operation   
             PrintFormat("retcode=%u  deal=%I64u  order=%I64u",result.retcode,result.deal,result.order);
          }
