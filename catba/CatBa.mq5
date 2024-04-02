@@ -242,6 +242,7 @@ void place_trade(ENUM_ORDER_TYPE orderType,double stopLossPrice,double takeProfi
     request.symbol = tradingSymbol;
     request.volume = lotSize;
     request.type = orderType;
+    request.type_filling = ORDER_FILLING_IOC;
     if(orderType == ORDER_TYPE_BUY) {
       request.price = latest_price.ask;
     }else if (orderType == ORDER_TYPE_SELL) {
