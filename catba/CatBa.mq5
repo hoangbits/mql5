@@ -188,7 +188,7 @@ string get_daily_bias() {
    }
    
    if(previous_day_open_price < previous_day_close_price)  {
-      bias = "SELL";
+      bias = "BUY";
    }
    double previous_day_range_pips = previous_day_close_price - previous_day_open_price;
    if(MathAbs(previous_day_range_pips) < minPipsRequiredFromYesterday)  {
@@ -270,6 +270,6 @@ void place_trade(ENUM_ORDER_TYPE orderType,double stopLossPrice,double takeProfi
    PrintFormat("retcode=%u  deal=%I64u  order=%I64u",result.retcode,result.deal,result.order);
    Print("place_trade::result.comment: ",result.comment);
    Print("place_trade::result.request_id: ",result.request_id);
-   Print("place_trade::result.retcode_external", result.retcode_external);
+   Print("place_trade11::result.retcode_external", result.retcode_external);
    
 }
