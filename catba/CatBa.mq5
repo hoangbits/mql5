@@ -16,12 +16,12 @@
 input double    lotSize=0.2;
 input double    riskPercentPerTrade=1.0;
 input bool     useRiskPercentPerTrade=false;
-input int      emaPeriod=9;
+input int      emaPeriod=7;
 input string   timeFrame="H1";
 input string   tradingSymbol="GBPJPY";
 input bool     requiredClosedBothSideOfEMA=false;
 //--- required pips from previous day to trade today some broker bullish/ some other bearish
-input int      minPipsRequiredFromYesterday=0; 
+input double      minPipsRequiredFromYesterday=0.3; 
 
 
 datetime previousHour = 0;
@@ -40,7 +40,7 @@ int OnInit()
    Print("-------------------on init start-------------------"); 
    // TimeCurrent() (which returns the current time in seconds since 1970)
    previousHour = TimeCurrent() / (60 * 60);
-   emaHandle = iMA(tradingSymbol,PERIOD_H1,9,0,MODE_EMA,PRICE_CLOSE);
+   emaHandle = iMA(tradingSymbol,PERIOD_H1,emaPeriod,0,MODE_EMA,PRICE_CLOSE);
    ArraySetAsSeries(MA_Buffer,true);
    
    handle_new_hourly();
