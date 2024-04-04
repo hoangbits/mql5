@@ -13,15 +13,16 @@
 
 //--- input parameters
 
-input double    lotSize=0.2;
+input double    lotSize=0.5;
 input double    riskPercentPerTrade=1.0;
 input bool     useRiskPercentPerTrade=false;
 input int      emaPeriod=7;
 input string   timeFrame="H1";
-input string   tradingSymbol="GBPJPY";
+input string   tradingSymbol="GBPJPY+";
 input bool     requiredClosedBothSideOfEMA=false;
 //--- required pips from previous day to trade today some broker bullish/ some other bearish
-input double      minPipsRequiredFromYesterday=0.3; 
+input double   minPipsRequiredFromYesterday=0.3; 
+input double   secondEntryProtractionPips=0.9; 
 
 
 datetime previousHour = 0;
@@ -87,8 +88,10 @@ void OnTrade()
 void handle_new_hourly(){
    string todayBias = get_daily_bias();
    Print("main::todayBias: ", todayBias);
-   
-    if (!isAlreadyPlaceATradeToday() && todayBias != "NOBIAS") {
+   double first_trade_open_price;
+   int total_trade_placed_today = total_trade_placed_today(first_trade_open_price);
+   // can place max 2 trade per day
+    if (total_trade_placed_today < 2 && todayBias != "NOBIAS") {
       //--- Get the current Bid price
       double currentBid = SymbolInfoDouble(tradingSymbol, SYMBOL_BID);   
       //--- Get the current Ask price
@@ -128,7 +131,12 @@ void handle_new_hourly(){
                if(potential_loss > potential_profit) {
                  sl = currentAsk - potential_profit;
                } 
-               place_trade(ORDER_TYPE_BUY, sl, vR1);
+               if (total_trade_placed_today == 0) {
+                 place_trade(ORDER_TYPE_BUY, sl, vR1);
+               } else if(currentAsk < first_trade_open_price - secondEntryProtractionPips) {                 
+                 place_trade(ORDER_TYPE_BUY, sl, vR1);
+               }
+               
             }
             else {
             Print("handle_new_hourly:: looking for BUY but currentASL is not < EMA9 hourly ");
@@ -149,7 +157,12 @@ void handle_new_hourly(){
                if(potential_loss > potential_profit) {
                  sl = currentBid + potential_profit;
                }                               
-               place_trade(ORDER_TYPE_SELL, sl, vS1);                              
+               
+               if (total_trade_placed_today == 0) {
+                 place_trade(ORDER_TYPE_SELL, sl, vS1);    
+               } else if(currentBid > first_trade_open_price + secondEntryProtractionPips) {                 
+                 place_trade(ORDER_TYPE_SELL, sl, vS1);    
+               }                          
             } else {
               Print("handle_new_hourly:: looking for sell but currentbid is not > EMA9 hourly ");
             }
@@ -201,10 +214,11 @@ string get_daily_bias() {
    return bias;
 }
 
-bool isAlreadyPlaceATradeToday(){
+int total_trade_placed_today(double &first_trade_price){
     datetime today_start_time = iTime(tradingSymbol, PERIOD_D1, 0);
     //int totalOrders = HistoryOrdersTotal()();
-    bool tradePlacedToday = false;
+    int total_trade_placed_today;
+    
     HistorySelect(today_start_time, TimeCurrent());
 
     for(int i = HistoryOrdersTotal() - 1; i >= 0; i--)
@@ -215,15 +229,16 @@ bool isAlreadyPlaceATradeToday(){
             datetime time_setup = (datetime)HistoryOrderGetInteger(ticket,ORDER_TIME_SETUP);
             if(time_setup >= today_start_time && HistoryOrderGetString(ticket,ORDER_SYMBOL) == tradingSymbol)
             {
-                tradePlacedToday = true;
+                total_trade_placed_today = true;
+                first_trade_price = HistoryOrderGetDouble(ticket,ORDER_PRICE_OPEN);
                 break;
             }
         }
     }            
 
-    Print("isAlreadyPlaceATradeToday::today_start_time value:", today_start_time);
-    Print("isAlreadyPlaceATradeToday::is placed trade Today: ", tradePlacedToday);
-    return tradePlacedToday;
+    
+    Print("total_trade_placed_today:: today_start_time:", today_start_time ," total_trade_placed_today: ", total_trade_placed_today);
+    return total_trade_placed_today;
 }
 
 
