@@ -13,7 +13,7 @@
 
 //--- input parameters
 
-input double    lotSize=0.5;
+input double    lotSize=0.05;
 input double    riskPercentPerTrade=1.0;
 input bool     useRiskPercentPerTrade=false;
 input int      emaPeriod=7;
@@ -22,7 +22,7 @@ input string   tradingSymbol="GBPJPY+";
 input bool     requiredClosedBothSideOfEMA=false;
 //--- required pips from previous day to trade today some broker bullish/ some other bearish
 input double   minPipsRequiredFromYesterday=0.3; 
-input double   secondEntryProtractionPips=0.9; 
+input double   secondEntryProtractionPips=0.09; 
 
 
 datetime previousHour = 0;
@@ -89,9 +89,9 @@ void handle_new_hourly(){
    string todayBias = get_daily_bias();
    Print("main::todayBias: ", todayBias);
    double first_trade_open_price;
-   int total_trade_placed_today = total_trade_placed_today(first_trade_open_price);
+   int total_trades = total_trade_placed_today(first_trade_open_price);
    // can place max 2 trade per day
-    if (total_trade_placed_today < 2 && todayBias != "NOBIAS") {
+    if (total_trades < 2 && todayBias != "NOBIAS") {
       //--- Get the current Bid price
       double currentBid = SymbolInfoDouble(tradingSymbol, SYMBOL_BID);   
       //--- Get the current Ask price
@@ -131,9 +131,9 @@ void handle_new_hourly(){
                if(potential_loss > potential_profit) {
                  sl = currentAsk - potential_profit;
                } 
-               if (total_trade_placed_today == 0) {
+               if (total_trades == 0) {
                  place_trade(ORDER_TYPE_BUY, sl, vR1);
-               } else if(currentAsk < first_trade_open_price - secondEntryProtractionPips) {                 
+               } else if(total_trades == 1 && currentAsk < first_trade_open_price - secondEntryProtractionPips) {                 
                  place_trade(ORDER_TYPE_BUY, sl, vR1);
                }
                
@@ -158,9 +158,9 @@ void handle_new_hourly(){
                  sl = currentBid + potential_profit;
                }                               
                
-               if (total_trade_placed_today == 0) {
+               if (total_trades == 0) {
                  place_trade(ORDER_TYPE_SELL, sl, vS1);    
-               } else if(currentBid > first_trade_open_price + secondEntryProtractionPips) {                 
+               } else if(total_trades == 1 && currentBid > first_trade_open_price + secondEntryProtractionPips) {                 
                  place_trade(ORDER_TYPE_SELL, sl, vS1);    
                }                          
             } else {
