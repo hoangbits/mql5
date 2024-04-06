@@ -22,14 +22,17 @@ input string   tradingSymbol="GBPJPY+";
 input bool     requiredClosedBothSideOfEMA=false;
 //--- required pips from previous day to trade today some broker bullish/ some other bearish
 input double   minPipsRequiredFromYesterday=0.3; 
+input double   minPipsRequiredFromLastWeek=0.6; 
+
 input double   secondEntryProtractionPips=0.09; 
+input double   addPipsToEMA=0.05; 
 
 
 datetime previousHour = 0;
 //--- related to EMA
 int    emaHandle;
 double MA_Buffer[];
-
+double last_trade_open_price = 0.0;
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
@@ -86,7 +89,8 @@ void OnTrade()
 //+------------------------------------------------------------------+
 
 void handle_new_hourly(){
-   string todayBias = get_daily_bias();
+   //string todayBias = get_daily_bias();
+   string todayBias = get_previous_week_bias();
    Print("main::todayBias: ", todayBias);
    double first_trade_open_price;
    int total_trades = total_trade_placed_today(first_trade_open_price);
@@ -98,7 +102,7 @@ void handle_new_hourly(){
       double currentAsk = SymbolInfoDouble(tradingSymbol, SYMBOL_ASK);
       Print("handle_new_hourly::Current Bid: ", currentBid);
       Print("handle_new_hourly::Current Ask: ", currentAsk);              
-      
+      Print("handle_new_hourly::first_trade_open_price: ", first_trade_open_price);              
       if(CopyBuffer(emaHandle,0,0,2,MA_Buffer)!=2) return;  
       //--- MA_Buffer[0] is current candle EMA      
       Print("handle_new_hourly::MA_Buffer[0]: ", MA_Buffer[0]);              
@@ -123,18 +127,23 @@ void handle_new_hourly(){
          if(!requiredClosedBothSideOfEMA) {
             //--- check if H1 candle closed below EMA9
            
-            if (currentAsk < MA_Buffer[0]){
-               Print("handle_new_hourly::START LONG as currentAsk < ema9_hourly: ", currentAsk < MA_Buffer[0]);
+            if (currentAsk < (MA_Buffer[0] - addPipsToEMA)){
+               //Print("handle_new_hourly::START LONG as currentAsk < ema9_hourly: ", currentAsk < MA_Buffer[0]);
                double sl = vS1;
                double potential_profit = vR1 - currentAsk;
                double potential_loss = currentAsk - vS1;
                if(potential_loss > potential_profit) {
                  sl = currentAsk - potential_profit;
-               } 
-               if (total_trades == 0) {
-                 place_trade(ORDER_TYPE_BUY, sl, vR1);
-               } else if(total_trades == 1 && currentAsk < first_trade_open_price - secondEntryProtractionPips) {                 
-                 place_trade(ORDER_TYPE_BUY, sl, vR1);
+               } else {
+                  Print("last_trade_open_price000000000000", last_trade_open_price);
+                  if (total_trades == 0) {
+                    place_trade(ORDER_TYPE_BUY, sl, vR1, last_trade_open_price, true);
+                  } else if(total_trades == 1 && currentAsk < last_trade_open_price - secondEntryProtractionPips) {                 
+                    Print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+                    //sl = vS1;
+                    //place_trade(ORDER_TYPE_BUY, sl, vR1, last_trade_open_price, false);
+                  }
+                  
                }
                
             }
@@ -149,20 +158,23 @@ void handle_new_hourly(){
       }else if(todayBias == "SELL") {
          if(!requiredClosedBothSideOfEMA) {
             //--- check if H1 candle closed above EMA9
-            if (currentBid > MA_Buffer[0]){
+            if (currentBid > (MA_Buffer[0] + addPipsToEMA)){
                Print("handle_new_hourly::START SELL as currentBid > ema9_hourly: ", currentAsk > MA_Buffer[0]);
                double sl = vR1;
                double potential_profit = currentBid - vS1;
                double potential_loss = vR1 - currentBid;
                if(potential_loss > potential_profit) {
                  sl = currentBid + potential_profit;
-               }                               
-               
-               if (total_trades == 0) {
-                 place_trade(ORDER_TYPE_SELL, sl, vS1);    
-               } else if(total_trades == 1 && currentBid > first_trade_open_price + secondEntryProtractionPips) {                 
-                 place_trade(ORDER_TYPE_SELL, sl, vS1);    
-               }                          
+               }   else {                            
+                  Print("last_trade_open_price111111111111111111", last_trade_open_price);
+                  if (total_trades == 0) {
+                    place_trade(ORDER_TYPE_SELL, sl, vS1, last_trade_open_price, true);    
+                  } else if(total_trades == 1 && currentBid > last_trade_open_price + secondEntryProtractionPips) {                 
+                    Print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+               //      sl = vR1;
+                    //place_trade(ORDER_TYPE_SELL, sl, vS1, last_trade_open_price, false);    
+                  }         
+               }                 
             } else {
               Print("handle_new_hourly:: looking for sell but currentbid is not > EMA9 hourly ");
             }
@@ -193,8 +205,8 @@ string get_daily_bias() {
    
    
    // Print previous trading day's close price
-   Print("Previous trading day's " , prev_day, " with open price: ", previous_day_open_price);   
-   Print("Previous trading day's " , prev_day, " with close price: ", previous_day_close_price);
+   //Print("Previous trading day's " , prev_day, " with open price: ", previous_day_open_price);   
+   //Print("Previous trading day's " , prev_day, " with close price: ", previous_day_close_price);
    string bias = "NOBIAS";
    if(previous_day_open_price > previous_day_close_price)  {
       bias = "SELL";
@@ -207,44 +219,91 @@ string get_daily_bias() {
    if(MathAbs(previous_day_range_pips) < minPipsRequiredFromYesterday)  {
       bias = "NOBIAS";
    }
-   Print("get_daily_bias::previous_day_range_pips: ", previous_day_range_pips);
-   Print("get_daily_bias::minPipsRequiredFromYesterday: ", minPipsRequiredFromYesterday);
+   //Print("get_daily_bias::previous_day_range_pips: ", previous_day_range_pips);
+   //Print("get_daily_bias::minPipsRequiredFromYesterday: ", minPipsRequiredFromYesterday);
    
    Print("get_daily_bias:: prev_day ", prev_day, " bias value: " , bias);
+   return bias;
+}
+
+
+string get_previous_week_bias() {
+   double previous_week_close_price, previous_week_open_price;          
+   // Get previous trading week
+   datetime prev_week = iTime(tradingSymbol, PERIOD_W1, 1);
+   
+   // Get shift for previous trading week's close price
+   int shift = iBarShift(tradingSymbol, PERIOD_W1, prev_week);
+   
+   // Get previous trading week's close price
+   previous_week_open_price= iOpen(tradingSymbol, PERIOD_W1, shift);
+   previous_week_close_price = iClose(tradingSymbol, PERIOD_W1, shift);
+   
+   
+   // Print previous trading week's close price
+   //Print("Previous trading week's " , prev_week, " with open price: ", previous_week_open_price);   
+   //Print("Previous trading week's " , prev_week, " with close price: ", previous_week_close_price);
+   string bias = "NOBIAS";
+   if(previous_week_open_price > previous_week_close_price)  {
+      bias = "SELL";
+   }
+   
+   if(previous_week_open_price < previous_week_close_price)  {
+      bias = "BUY";
+   }
+   double previous_week_range_pips = previous_week_close_price - previous_week_open_price;
+   if(MathAbs(previous_week_range_pips) < minPipsRequiredFromLastWeek)  {
+      bias = "NOBIAS";
+   }
+   //Print("get_previous_week_bias::previous_week_range_pips: ", previous_week_range_pips);
+   //Print("get_previous_week_bias::minPipsRequiredFromLastWeek: ", minPipsRequiredFromLastWeek);
+   
+   Print("get_previous_week_bias:: prev_week ", prev_week, " bias value: " , bias);
    return bias;
 }
 
 int total_trade_placed_today(double &first_trade_price){
     datetime today_start_time = iTime(tradingSymbol, PERIOD_D1, 0);
     //int totalOrders = HistoryOrdersTotal()();
-    int total_trade_placed_today;
+    int total_trade_placed_today = 0;
     
     HistorySelect(today_start_time, TimeCurrent());
 
     for(int i = HistoryOrdersTotal() - 1; i >= 0; i--)
     {
-        ulong ticket=HistoryOrderGetTicket(i);
+        ulong ticket=HistoryOrderGetTicket(i);             
         if (ticket > 0)
         {
             datetime time_setup = (datetime)HistoryOrderGetInteger(ticket,ORDER_TIME_SETUP);
             if(time_setup >= today_start_time && HistoryOrderGetString(ticket,ORDER_SYMBOL) == tradingSymbol)
             {
-                total_trade_placed_today = true;
-                first_trade_price = HistoryOrderGetDouble(ticket,ORDER_PRICE_OPEN);
-                break;
+                //double open_price = HistoryOrderGetDouble(ticket,ORDER_PRICE_OPEN);
+                //double trade_tp = HistoryOrderGetDouble(ticket, ORDER_TP);                                                 
+                  //Print("AAAAAAAAAAAAAAAAAAAA open_price", open_price);
+                  //Print("BBBBBBBBBBBBB trade_tp", trade_tp);
+                if(total_trade_placed_today == 0 ) {
+                  //first_trade_price = HistoryOrderGetDouble(ticket, ORDER_PRICE_OPEN);                                                 
+                  //double first_trade_tp = HistoryOrderGetDouble(ticket, ORDER_TP);                                                 
+                  //double first_trade_price = open_price;
+                  //Print("found first_trade_price", first_trade_price);
+                  //Print("found first_trade_tp", first_trade_tp);
+                  
+                }
+                total_trade_placed_today = total_trade_placed_today + 1;                               
+                
             }
         }
     }            
-
-    
     Print("total_trade_placed_today:: today_start_time:", today_start_time ," total_trade_placed_today: ", total_trade_placed_today);
     return total_trade_placed_today;
+    
+    
 }
 
 
 
 
-void place_trade(ENUM_ORDER_TYPE orderType,double stopLossPrice,double takeProfitPrice) {
+void place_trade(ENUM_ORDER_TYPE orderType,double stopLossPrice,double takeProfitPrice, double &last_trade_open_price, bool is_first_trade) {
 
     MqlTradeRequest request = {};
     MqlTradeResult result = {};
@@ -260,9 +319,18 @@ void place_trade(ENUM_ORDER_TYPE orderType,double stopLossPrice,double takeProfi
     request.type_filling = ORDER_FILLING_IOC;
     if(orderType == ORDER_TYPE_BUY) {
       request.price = latest_price.ask;
+      if (is_first_trade == true) {
+         last_trade_open_price = latest_price.ask;
+      }
+      
     }else if (orderType == ORDER_TYPE_SELL) {
       request.price = latest_price.bid;
+      if (is_first_trade == true) {
+        last_trade_open_price = latest_price.bid;
+      }
+      
     }
+    
     Print("place_trade::", orderType ,"  at price:", request.price);
     Print("place_trade::Stop Loss set at:", stopLossPrice);
     Print("place_trade::Take Profit set at:", takeProfitPrice);
