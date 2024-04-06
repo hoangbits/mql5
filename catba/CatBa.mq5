@@ -13,17 +13,17 @@
 
 //--- input parameters
 
-input double    lotSize=0.05;
+input double    lotSize=0.1;
 input double    riskPercentPerTrade=1.0;
 input bool     useRiskPercentPerTrade=false;
-input int      emaPeriod=7;
+input int      emaPeriod=9;
 input string   timeFrame="H1";
 input string   tradingSymbol="GBPJPY+";
 input bool     requiredClosedBothSideOfEMA=false;
 //--- required pips from previous day to trade today some broker bullish/ some other bearish
 input double   minPipsRequiredFromYesterday=0.3; 
 input double   minPipsRequiredFromLastWeek=0.6; 
-input double   addPipsToEMA=0.05; 
+input double   addPipsToEMA=0.1; 
 
 
 datetime previousHour = 0;
@@ -87,8 +87,8 @@ void OnTrade()
 //+------------------------------------------------------------------+
 
 void handle_new_hourly(){
-   //string todayBias = get_daily_bias();
-   string todayBias = get_previous_week_bias();
+   string todayBias = get_daily_bias();
+   //string todayBias = get_previous_week_bias();
    Print("main::todayBias: ", todayBias);      
    // can place max 2 trade per day
    if (!isAlreadyPlaceATradeToday() && todayBias != "NOBIAS") {
