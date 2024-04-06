@@ -13,8 +13,8 @@
 
 //--- input parameters
 
-input double    lotSize=0.1;
-input double    riskPercentPerTrade=1.0;
+input double   lotSize=0.1;
+input double   riskPercentPerTrade=1.0;
 input bool     useRiskPercentPerTrade=false;
 input int      emaPeriod=9;
 input string   timeFrame="H1";
@@ -285,39 +285,64 @@ bool isAlreadyPlaceATradeToday(){
     return tradePlacedToday;
 }
 
+//+------------------------------------------------------------------+
+//| Calculate lot size based on percentage of account equity         |
+//+------------------------------------------------------------------+
+double CalculateLotSize(double percentage, double accountEquity)
+{
+   double tickValue = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
+   double tickSize = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_SIZE);
+   double lotStep = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
+
+   double riskAmount = accountEquity * percentage / 100;
+   double lotSize = NormalizeDouble(riskAmount / (tickValue / tickSize), 2);
+   lotSize = MathFloor(lotSize / lotStep) * lotStep;
+
+   return lotSize;
+}
+
 
 
 
 
 void place_trade(ENUM_ORDER_TYPE orderType,double stopLossPrice,double takeProfitPrice) {
+   if(riskPercentPerTrade > 0.0) {
+      //--- Get account equity
+      double accountEquity = AccountInfoDouble(ACCOUNT_EQUITY);
 
-    MqlTradeRequest request = {};
-    MqlTradeResult result = {};
-    ZeroMemory(request);  // Initialize memory to zero
-    ZeroMemory(result);
-    MqlTick latest_price;   // To get the latest price
-    SymbolInfoTick(tradingSymbol, latest_price);
-    
-    request.action = TRADE_ACTION_DEAL;
-    request.symbol = tradingSymbol;
-    request.volume = lotSize;
-    request.type = orderType;
-    request.type_filling = ORDER_FILLING_IOC;
-    if(orderType == ORDER_TYPE_BUY) {
-      request.price = latest_price.ask;      
-    }else if (orderType == ORDER_TYPE_SELL) {
-      request.price = latest_price.bid;            
-    }
-    
-    Print("place_trade::", orderType ,"  at price:", request.price);
-    Print("place_trade::Stop Loss set at:", stopLossPrice);
-    Print("place_trade::Take Profit set at:", takeProfitPrice);
-    request.deviation = 10;
-    request.magic = 123456;
+      //--- Calculate lot size for 1% risk
+      lotSize = CalculateLotSize(riskPercentPerTrade, accountEquity);
+      Print("Lot size for 1% risk: ", lotSize);
+   } 
+   Print("lotSize Placing: ", lotSize);
 
-    request.sl = stopLossPrice;
-    request.tp = takeProfitPrice;
+   MqlTradeRequest request = {};
+   MqlTradeResult result = {};
+   ZeroMemory(request);  // Initialize memory to zero
+   ZeroMemory(result);
+   MqlTick latest_price;   // To get the latest price
+   SymbolInfoTick(tradingSymbol, latest_price);
    
+   request.action = TRADE_ACTION_DEAL;
+   request.symbol = tradingSymbol;
+   request.volume = lotSize;
+   request.type = orderType;
+   request.type_filling = ORDER_FILLING_IOC;
+   if(orderType == ORDER_TYPE_BUY) {
+   request.price = latest_price.ask;      
+   }else if (orderType == ORDER_TYPE_SELL) {
+   request.price = latest_price.bid;            
+   }
+   
+   Print("place_trade::", orderType ,"  at price:", request.price);
+   Print("place_trade::Stop Loss set at:", stopLossPrice);
+   Print("place_trade::Take Profit set at:", takeProfitPrice);
+   request.deviation = 10;
+   request.magic = 123456;
+
+   request.sl = stopLossPrice;
+   request.tp = takeProfitPrice;
+
   
    Print(SymbolInfoInteger(Symbol(), SYMBOL_FILLING_MODE));
 
