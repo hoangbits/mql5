@@ -23,8 +23,6 @@ input bool     requiredClosedBothSideOfEMA=false;
 //--- required pips from previous day to trade today some broker bullish/ some other bearish
 input double   minPipsRequiredFromYesterday=0.3; 
 input double   minPipsRequiredFromLastWeek=0.6; 
-
-input double   secondEntryProtractionPips=0.09; 
 input double   addPipsToEMA=0.05; 
 
 
@@ -32,7 +30,7 @@ datetime previousHour = 0;
 //--- related to EMA
 int    emaHandle;
 double MA_Buffer[];
-double last_trade_open_price = 0.0;
+
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
@@ -91,18 +89,16 @@ void OnTrade()
 void handle_new_hourly(){
    //string todayBias = get_daily_bias();
    string todayBias = get_previous_week_bias();
-   Print("main::todayBias: ", todayBias);
-   double first_trade_open_price;
-   int total_trades = total_trade_placed_today(first_trade_open_price);
+   Print("main::todayBias: ", todayBias);      
    // can place max 2 trade per day
-    if (total_trades < 2 && todayBias != "NOBIAS") {
+   if (!isAlreadyPlaceATradeToday() && todayBias != "NOBIAS") {
       //--- Get the current Bid price
       double currentBid = SymbolInfoDouble(tradingSymbol, SYMBOL_BID);   
       //--- Get the current Ask price
       double currentAsk = SymbolInfoDouble(tradingSymbol, SYMBOL_ASK);
       Print("handle_new_hourly::Current Bid: ", currentBid);
-      Print("handle_new_hourly::Current Ask: ", currentAsk);              
-      Print("handle_new_hourly::first_trade_open_price: ", first_trade_open_price);              
+      Print("handle_new_hourly::Current Ask: ", currentAsk);          
+
       if(CopyBuffer(emaHandle,0,0,2,MA_Buffer)!=2) return;  
       //--- MA_Buffer[0] is current candle EMA      
       Print("handle_new_hourly::MA_Buffer[0]: ", MA_Buffer[0]);              
@@ -134,21 +130,11 @@ void handle_new_hourly(){
                double potential_loss = currentAsk - vS1;
                if(potential_loss > potential_profit) {
                  sl = currentAsk - potential_profit;
-               } else {
-                  Print("last_trade_open_price000000000000", last_trade_open_price);
-                  if (total_trades == 0) {
-                    place_trade(ORDER_TYPE_BUY, sl, vR1, last_trade_open_price, true);
-                  } else if(total_trades == 1 && currentAsk < last_trade_open_price - secondEntryProtractionPips) {                 
-                    Print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-                    //sl = vS1;
-                    //place_trade(ORDER_TYPE_BUY, sl, vR1, last_trade_open_price, false);
-                  }
-                  
                }
-               
+               place_trade(ORDER_TYPE_BUY, sl, vR1);                
             }
             else {
-            Print("handle_new_hourly:: looking for BUY but currentASL is not < EMA9 hourly ");
+               Print("handle_new_hourly:: looking for BUY but currentASL is not < EMA9 hourly ");
             }
             
          }else{
@@ -165,16 +151,8 @@ void handle_new_hourly(){
                double potential_loss = vR1 - currentBid;
                if(potential_loss > potential_profit) {
                  sl = currentBid + potential_profit;
-               }   else {                            
-                  Print("last_trade_open_price111111111111111111", last_trade_open_price);
-                  if (total_trades == 0) {
-                    place_trade(ORDER_TYPE_SELL, sl, vS1, last_trade_open_price, true);    
-                  } else if(total_trades == 1 && currentBid > last_trade_open_price + secondEntryProtractionPips) {                 
-                    Print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-               //      sl = vR1;
-                    //place_trade(ORDER_TYPE_SELL, sl, vS1, last_trade_open_price, false);    
-                  }         
-               }                 
+               }   
+               place_trade(ORDER_TYPE_SELL, sl, vS1);                 
             } else {
               Print("handle_new_hourly:: looking for sell but currentbid is not > EMA9 hourly ");
             }
@@ -262,13 +240,10 @@ string get_previous_week_bias() {
    return bias;
 }
 
-int total_trade_placed_today(double &first_trade_price){
-    datetime today_start_time = iTime(tradingSymbol, PERIOD_D1, 0);
-    //int totalOrders = HistoryOrdersTotal()();
-    int total_trade_placed_today = 0;
-    
+int total_trade_placed_today(){
+    datetime today_start_time = iTime(tradingSymbol, PERIOD_D1, 0);    
+    int total_trade_placed_today = 0;    
     HistorySelect(today_start_time, TimeCurrent());
-
     for(int i = HistoryOrdersTotal() - 1; i >= 0; i--)
     {
         ulong ticket=HistoryOrderGetTicket(i);             
@@ -276,34 +251,45 @@ int total_trade_placed_today(double &first_trade_price){
         {
             datetime time_setup = (datetime)HistoryOrderGetInteger(ticket,ORDER_TIME_SETUP);
             if(time_setup >= today_start_time && HistoryOrderGetString(ticket,ORDER_SYMBOL) == tradingSymbol)
-            {
-                //double open_price = HistoryOrderGetDouble(ticket,ORDER_PRICE_OPEN);
-                //double trade_tp = HistoryOrderGetDouble(ticket, ORDER_TP);                                                 
-                  //Print("AAAAAAAAAAAAAAAAAAAA open_price", open_price);
-                  //Print("BBBBBBBBBBBBB trade_tp", trade_tp);
-                if(total_trade_placed_today == 0 ) {
-                  //first_trade_price = HistoryOrderGetDouble(ticket, ORDER_PRICE_OPEN);                                                 
-                  //double first_trade_tp = HistoryOrderGetDouble(ticket, ORDER_TP);                                                 
-                  //double first_trade_price = open_price;
-                  //Print("found first_trade_price", first_trade_price);
-                  //Print("found first_trade_tp", first_trade_tp);
-                  
-                }
-                total_trade_placed_today = total_trade_placed_today + 1;                               
-                
+            {                
+                total_trade_placed_today = total_trade_placed_today + 1;                                               
             }
         }
     }            
     Print("total_trade_placed_today:: today_start_time:", today_start_time ," total_trade_placed_today: ", total_trade_placed_today);
-    return total_trade_placed_today;
-    
-    
+    return total_trade_placed_today;    
+}
+
+bool isAlreadyPlaceATradeToday(){
+    datetime today_start_time = iTime(tradingSymbol, PERIOD_D1, 0);
+    //int totalOrders = HistoryOrdersTotal()();
+    bool tradePlacedToday = false;
+    HistorySelect(today_start_time, TimeCurrent());
+
+    for(int i = HistoryOrdersTotal() - 1; i >= 0; i--)
+    {
+        ulong ticket=HistoryOrderGetTicket(i);
+        if (ticket > 0)
+        {
+            datetime time_setup = (datetime)HistoryOrderGetInteger(ticket,ORDER_TIME_SETUP);
+            if(time_setup >= today_start_time && HistoryOrderGetString(ticket,ORDER_SYMBOL) == tradingSymbol)
+            {
+                tradePlacedToday = true;
+                break;
+            }
+        }
+    }            
+
+    Print("isAlreadyPlaceATradeToday::today_start_time value:", today_start_time);
+    Print("isAlreadyPlaceATradeToday::is placed trade Today: ", tradePlacedToday);
+    return tradePlacedToday;
 }
 
 
 
 
-void place_trade(ENUM_ORDER_TYPE orderType,double stopLossPrice,double takeProfitPrice, double &last_trade_open_price, bool is_first_trade) {
+
+void place_trade(ENUM_ORDER_TYPE orderType,double stopLossPrice,double takeProfitPrice) {
 
     MqlTradeRequest request = {};
     MqlTradeResult result = {};
@@ -318,17 +304,9 @@ void place_trade(ENUM_ORDER_TYPE orderType,double stopLossPrice,double takeProfi
     request.type = orderType;
     request.type_filling = ORDER_FILLING_IOC;
     if(orderType == ORDER_TYPE_BUY) {
-      request.price = latest_price.ask;
-      if (is_first_trade == true) {
-         last_trade_open_price = latest_price.ask;
-      }
-      
+      request.price = latest_price.ask;      
     }else if (orderType == ORDER_TYPE_SELL) {
-      request.price = latest_price.bid;
-      if (is_first_trade == true) {
-        last_trade_open_price = latest_price.bid;
-      }
-      
+      request.price = latest_price.bid;            
     }
     
     Print("place_trade::", orderType ,"  at price:", request.price);
