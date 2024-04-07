@@ -295,44 +295,91 @@ double CalculateLotSize(double percentage, double accountEquity)
    double lotStep = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
 
    double riskAmount = accountEquity * percentage / 100;
-   double lotSize = NormalizeDouble(riskAmount / (tickValue / tickSize), 2);
-   lotSize = MathFloor(lotSize / lotStep) * lotStep;
+   double calculate_lot_size = NormalizeDouble(riskAmount / (tickValue / tickSize), 2);
+   calculate_lot_size  = MathFloor(calculate_lot_size / lotStep) * lotStep;
 
-   return lotSize;
+   return calculate_lot_size;
+}
+
+//+------------------------------------------------------------------+
+//| Calculates the lot size based on symbol, entry price, SL, and TP |
+//+------------------------------------------------------------------+
+double CalculateLotSize(string symbol, double entryPrice, double stopLoss, double riskPerTrade)
+{
+    double tickSize = SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_SIZE); // 0.001
+    double tick_value = SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_VALUE); // 100.0
+    
+     Print("symbol Tick Value: ", tick_value);
+    double pointValue = tickSize * tick_value; // 0.1
+      
+    double stopLossPips = MathAbs(entryPrice - stopLoss) / pointValue;
+    
+    double riskAmount = AccountInfoDouble(ACCOUNT_EQUITY) * riskPerTrade; // e.g 150 usd over 50pip
+    double expect_usd_per_1_lot = riskAmount / stopLossPips; // e.g 3 usd per pip
+    
+    /// e.g: 1 lot - 1 pip move -10 usd -> 
+    // our case: 1 pip -> 3 usd 
+    // -> suppose if 1 lot move 1 pip cost 10usd.
+    // ->? find lot size if 1 pip want it to cost 3 usd  (3 = 150(riskt money)/50 pips SL
+    // 1 lot cost 10 usd
+    //-> find lot to cost 3 usd 
+    // lot = (1 * 3-riskamopunt) / 10-onepipvalue
+    
+    Print("CalculateLotSize::tickSize ", tickSize);
+    Print("CalculateLotSize::tickValue ", tick_value);
+    Print("CalculateLotSize::pointValue ", pointValue);
+    
+    Print("CalculateLotSize::riskPerTrade: ", riskPerTrade, " onaccoutn equity ", AccountInfoDouble(ACCOUNT_EQUITY));
+    
+    //double trade_lot_size = NormalizeDouble(riskAmount / (stopLossDistance * pointValue), 2);
+    double onePipValue = tick_value / tickSize;
+    MqlTick latest_price;   // To get the latest price
+   SymbolInfoTick("USDJPY", latest_price);
+    double one_lot_value_usd = (0.01 / latest_price.ask) * 100000;
+    Print("CalculateLotSize:: UJ", latest_price.ask);
+    Print("CalculateLotSize::riskAmount ", riskAmount);
+    Print("CalculateLotSize::stopLossPips ", stopLossPips);
+    Print("CalculateLotSize::expect_usd_per_1_lot ", expect_usd_per_1_lot);
+    Print("CalculateLotSize::one_lot_value_usd", one_lot_value_usd);
+    
+    double trade_lot_size = NormalizeDouble(expect_usd_per_1_lot / one_lot_value_usd, 2);
+    Print("CalculateLotSize::trade_lot_size ", trade_lot_size);
+    return trade_lot_size;
 }
 
 
 
 
-
 void place_trade(ENUM_ORDER_TYPE orderType,double stopLossPrice,double takeProfitPrice) {
-   if(riskPercentPerTrade > 0.0) {
-      //--- Get account equity
-      double accountEquity = AccountInfoDouble(ACCOUNT_EQUITY);
-
-      //--- Calculate lot size for 1% risk
-      lotSize = CalculateLotSize(riskPercentPerTrade, accountEquity);
-      Print("Lot size for 1% risk: ", lotSize);
-   } 
-   Print("lotSize Placing: ", lotSize);
-
    MqlTradeRequest request = {};
    MqlTradeResult result = {};
    ZeroMemory(request);  // Initialize memory to zero
    ZeroMemory(result);
    MqlTick latest_price;   // To get the latest price
    SymbolInfoTick(tradingSymbol, latest_price);
+   double entry_price;
+   if(orderType == ORDER_TYPE_BUY) {
+     entry_price = latest_price.ask;      
+   }else if (orderType == ORDER_TYPE_SELL) {
+     entry_price = latest_price.bid;            
+   }
+   
+   double trade_lot_size = lotSize;
+   if(riskPercentPerTrade > 0.0) {      
+      //--- Calculate lot size for riskPercentPerTrade% risk
+      trade_lot_size = CalculateLotSize(tradingSymbol, entry_price, stopLossPrice, riskPercentPerTrade/100);
+      Print("Lot size for riskPercentPerTrade:", riskPercentPerTrade ,"% risk: ", trade_lot_size );
+   } 
+   Print("lotSize Placing: ", trade_lot_size );
+
+   
    
    request.action = TRADE_ACTION_DEAL;
    request.symbol = tradingSymbol;
-   request.volume = lotSize;
+   request.volume = trade_lot_size;
    request.type = orderType;
-   request.type_filling = ORDER_FILLING_IOC;
-   if(orderType == ORDER_TYPE_BUY) {
-   request.price = latest_price.ask;      
-   }else if (orderType == ORDER_TYPE_SELL) {
-   request.price = latest_price.bid;            
-   }
+   request.type_filling = ORDER_FILLING_IOC;   
+   request.price = entry_price;
    
    Print("place_trade::", orderType ,"  at price:", request.price);
    Print("place_trade::Stop Loss set at:", stopLossPrice);
