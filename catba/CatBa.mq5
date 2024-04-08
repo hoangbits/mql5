@@ -14,11 +14,12 @@
 //--- input parameters
 
 input double   lotSize=0.1;
-input double   riskPercentPerTrade=1.0;
+input double   riskPercentPerTrade=0.031;
 input bool     useRiskPercentPerTrade=false;
-input int      emaPeriod=9;
+input int      emaPeriod=8;
 input string   timeFrame="H1";
 input string   tradingSymbol="GBPJPY+";
+input string   symbolUJOnBroker="USDJPY+";
 input bool     requiredClosedBothSideOfEMA=false;
 //--- required pips from previous day to trade today some broker bullish/ some other bearish
 input double   minPipsRequiredFromYesterday=0.3; 
@@ -285,21 +286,6 @@ bool isAlreadyPlaceATradeToday(){
     return tradePlacedToday;
 }
 
-//+------------------------------------------------------------------+
-//| Calculate lot size based on percentage of account equity         |
-//+------------------------------------------------------------------+
-double CalculateLotSize(double percentage, double accountEquity)
-{
-   double tickValue = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
-   double tickSize = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_SIZE);
-   double lotStep = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
-
-   double riskAmount = accountEquity * percentage / 100;
-   double calculate_lot_size = NormalizeDouble(riskAmount / (tickValue / tickSize), 2);
-   calculate_lot_size  = MathFloor(calculate_lot_size / lotStep) * lotStep;
-
-   return calculate_lot_size;
-}
 
 //+------------------------------------------------------------------+
 //| Calculates the lot size based on symbol, entry price, SL, and TP |
@@ -307,40 +293,35 @@ double CalculateLotSize(double percentage, double accountEquity)
 double CalculateLotSize(string symbol, double entryPrice, double stopLoss, double riskPerTrade)
 {
     double tickSize = SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_SIZE); // 0.001
-    double tick_value = SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_VALUE); // 100.0
-    
-     Print("symbol Tick Value: ", tick_value);
+    double tick_value = SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_VALUE); // 100.0        
     double pointValue = tickSize * tick_value; // 0.1
       
-    double stopLossPips = MathAbs(entryPrice - stopLoss) / pointValue;
+    double stopLossPips = MathAbs(entryPrice - stopLoss) / pointValue; // 40 or 50 or 60... pips
     
     double riskAmount = AccountInfoDouble(ACCOUNT_EQUITY) * riskPerTrade; // e.g 150 usd over 50pip
     double expect_usd_per_1_lot = riskAmount / stopLossPips; // e.g 3 usd per pip
-    
-    /// e.g: 1 lot - 1 pip move -10 usd -> 
-    // our case: 1 pip -> 3 usd 
-    // -> suppose if 1 lot move 1 pip cost 10usd.
-    // ->? find lot size if 1 pip want it to cost 3 usd  (3 = 150(riskt money)/50 pips SL
-    // 1 lot cost 10 usd
+        
+    // 1 lot(1pip) cost 7 usd
     //-> find lot to cost 3 usd 
-    // lot = (1 * 3-riskamopunt) / 10-onepipvalue
+    // lot_value = (1 * 3 as riskamopunt) / 7 asonepipvalue
+    
     
     Print("CalculateLotSize::tickSize ", tickSize);
     Print("CalculateLotSize::tickValue ", tick_value);
     Print("CalculateLotSize::pointValue ", pointValue);
+    Print("CalculateLotSize::riskPerTrade: ", riskPerTrade, " ACCOUNT_EQUITY ", AccountInfoDouble(ACCOUNT_EQUITY));
     
-    Print("CalculateLotSize::riskPerTrade: ", riskPerTrade, " onaccoutn equity ", AccountInfoDouble(ACCOUNT_EQUITY));
     
-    //double trade_lot_size = NormalizeDouble(riskAmount / (stopLossDistance * pointValue), 2);
-    double onePipValue = tick_value / tickSize;
-    MqlTick latest_price;   // To get the latest price
-   SymbolInfoTick("USDJPY", latest_price);
-    double one_lot_value_usd = (0.01 / latest_price.ask) * 100000;
-    Print("CalculateLotSize:: UJ", latest_price.ask);
+    
+    MqlTick latest_price_uj;   // To get the latest price USDJPY
+    SymbolInfoTick(symbolUJOnBroker, latest_price_uj);
+    double one_lot_value_usd = (0.01 / latest_price_uj.ask) * 100000;
+    
+    Print("CalculateLotSize::latest_price_uj.ask", latest_price_uj.ask);
     Print("CalculateLotSize::riskAmount ", riskAmount);
     Print("CalculateLotSize::stopLossPips ", stopLossPips);
-    Print("CalculateLotSize::expect_usd_per_1_lot ", expect_usd_per_1_lot);
-    Print("CalculateLotSize::one_lot_value_usd", one_lot_value_usd);
+    Print("CalculateLotSize::expect_usd_per_1_lot ", expect_usd_per_1_lot); //  e.g depends on Risk amount and pip SL
+    Print("CalculateLotSize::one_lot_value_usd", one_lot_value_usd); //  e.g: 7 usd
     
     double trade_lot_size = NormalizeDouble(expect_usd_per_1_lot / one_lot_value_usd, 2);
     Print("CalculateLotSize::trade_lot_size ", trade_lot_size);
