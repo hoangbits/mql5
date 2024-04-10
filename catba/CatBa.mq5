@@ -46,7 +46,7 @@ int OnInit()
    emaHandle = iMA(tradingSymbol,PERIOD_H1,emaPeriod,0,MODE_EMA,PRICE_CLOSE);
    ArraySetAsSeries(MA_Buffer,true);
    
-   handle_new_hourly();
+   handle_new_tick();
  
   
   
@@ -71,7 +71,7 @@ void OnTick()
    datetime currentHour = TimeCurrent() / (60 * 60);
    if(currentHour != previousHour) {
       // when new hourly candle start to form
-      handle_new_hourly();
+      handle_new_tick();
       previousHour = currentHour;
    }
       
@@ -87,7 +87,7 @@ void OnTrade()
   }
 //+------------------------------------------------------------------+
 
-void handle_new_hourly(){
+void handle_new_tick(){
    string todayBias = get_daily_bias();
    //string todayBias = get_previous_week_bias();
    Print("main::todayBias: ", todayBias);      
@@ -97,12 +97,12 @@ void handle_new_hourly(){
       double currentBid = SymbolInfoDouble(tradingSymbol, SYMBOL_BID);   
       //--- Get the current Ask price
       double currentAsk = SymbolInfoDouble(tradingSymbol, SYMBOL_ASK);
-      Print("handle_new_hourly::Current Bid: ", currentBid);
-      Print("handle_new_hourly::Current Ask: ", currentAsk);          
+      Print("handle_new_tick::Current Bid: ", currentBid);
+      Print("handle_new_tick::Current Ask: ", currentAsk);          
 
       if(CopyBuffer(emaHandle,0,0,2,MA_Buffer)!=2) return;  
       //--- MA_Buffer[0] is current candle EMA      
-      Print("handle_new_hourly::MA_Buffer[0]: ", MA_Buffer[0]);              
+      Print("handle_new_tick::MA_Buffer[0]: ", MA_Buffer[0]);              
       //Print("Media_Movil[0] = ", MA_Buffer[0] ,"\n","Media_Movil[1] = ",DoubleToString(MA_Buffer[1],6));
       
       //--- START handle povot point
@@ -113,11 +113,11 @@ void handle_new_hourly(){
       double vPP = (xHigh+xLow+xClose) / 3;
       double vR1 = vPP+(vPP-xLow);
       double vS1 = vPP-(xHigh - vPP);
-      //Print("handle_new_hourly:: xHigh: ", xHigh);
-      //Print("handle_new_hourly::xLow: ", xLow);
-      //Print("handle_new_hourly::xClose: ", xClose);
-      Print("vhandle_new_hourly:: R1: ", vR1);
-      Print("handle_new_hourly:: vS1: ", vS1);
+      //Print("handle_new_tick:: xHigh: ", xHigh);
+      //Print("handle_new_tick::xLow: ", xLow);
+      //Print("handle_new_tick::xClose: ", xClose);
+      Print("vhandle_new_tick:: R1: ", vR1);
+      Print("handle_new_tick:: vS1: ", vS1);
       //--- END handle povot point
       
       if(todayBias == "BUY") {
@@ -125,7 +125,7 @@ void handle_new_hourly(){
             //--- check if H1 candle closed below EMA9
            
             if (currentAsk < (MA_Buffer[0] - addPipsToEMA)){
-               //Print("handle_new_hourly::START LONG as currentAsk < ema9_hourly: ", currentAsk < MA_Buffer[0]);
+               //Print("handle_new_tick::START LONG as currentAsk < ema9_hourly: ", currentAsk < MA_Buffer[0]);
                double sl = vS1;
                double potential_profit = vR1 - currentAsk;
                double potential_loss = currentAsk - vS1;
@@ -135,7 +135,7 @@ void handle_new_hourly(){
                place_trade(ORDER_TYPE_BUY, sl, vR1);                
             }
             else {
-               Print("handle_new_hourly:: looking for BUY but currentASL is not < EMA9 hourly ");
+               Print("handle_new_tick:: looking for BUY but currentASL is not < EMA9 hourly ");
             }
             
          }else{
@@ -146,7 +146,7 @@ void handle_new_hourly(){
          if(!requiredClosedBothSideOfEMA) {
             //--- check if H1 candle closed above EMA9
             if (currentBid > (MA_Buffer[0] + addPipsToEMA)){
-               Print("handle_new_hourly::START SELL as currentBid > ema9_hourly: ", currentAsk > MA_Buffer[0]);
+               Print("handle_new_tick::START SELL as currentBid > ema9_hourly: ", currentAsk > MA_Buffer[0]);
                double sl = vR1;
                double potential_profit = currentBid - vS1;
                double potential_loss = vR1 - currentBid;
@@ -155,7 +155,7 @@ void handle_new_hourly(){
                }   
                place_trade(ORDER_TYPE_SELL, sl, vS1);                 
             } else {
-              Print("handle_new_hourly:: looking for sell but currentbid is not > EMA9 hourly ");
+              Print("handle_new_tick:: looking for sell but currentbid is not > EMA9 hourly ");
             }
          }else{
             Print("not handle SELL both side yet");        
