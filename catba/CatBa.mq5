@@ -14,9 +14,10 @@
 //--- input parameters
 
 input double   lotSize=0.1;
-input double   riskPercentPerTrade=0.031;
+input double   riskPercentPerTrade=0.0;
 input bool     useRiskPercentPerTrade=false;
 input int      emaPeriod=8;
+input int      checkEveryMinutes=15; 
 input string   timeFrame="H1";
 input string   tradingSymbol="GBPJPY+";
 input string   symbolUJOnBroker="USDJPY+";
@@ -27,7 +28,8 @@ input double   minPipsRequiredFromLastWeek=0.6;
 input double   addPipsToEMA=0.1; 
 
 
-datetime previousHour = 0;
+
+datetime previousRange = 0;
 //--- related to EMA
 int    emaHandle;
 double MA_Buffer[];
@@ -42,7 +44,7 @@ int OnInit()
 //--- todo copy it to ontick later
    Print("-------------------on init start-------------------"); 
    // TimeCurrent() (which returns the current time in seconds since 1970)
-   previousHour = TimeCurrent() / (60 * 60);
+   previousRange = TimeCurrent() / (60 * checkEveryMinutes);
    emaHandle = iMA(tradingSymbol,PERIOD_H1,emaPeriod,0,MODE_EMA,PRICE_CLOSE);
    ArraySetAsSeries(MA_Buffer,true);
    
@@ -67,13 +69,15 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
   {
-   // get current hour
-   datetime currentHour = TimeCurrent() / (60 * 60);
-   if(currentHour != previousHour) {
-      // when new hourly candle start to form
+   // get current range
+   datetime currenTFtRange = TimeCurrent() / (60 * checkEveryMinutes);
+    
+   if(currenTFtRange != previousRange) {
+      // when new hourly candle start to form      
       handle_new_tick();
-      previousHour = currentHour;
+      previousRange = currenTFtRange;
    }
+   
       
    //
   }
