@@ -13,19 +13,19 @@
 
 //--- input parameters
 
-input double   lotSize=0.1;
+input double   lotSize=1.5;
 input double   riskPercentPerTrade=0.0;
 input bool     useRiskPercentPerTrade=false;
 input int      emaPeriod=8;
-input int      checkEveryMinutes=15; 
+input int      checkEveryMinutes=60; 
 input string   timeFrame="H1";
 input string   tradingSymbol="GBPJPY+";
 input string   symbolUJOnBroker="USDJPY+";
 input bool     requiredClosedBothSideOfEMA=false;
 //--- required pips from previous day to trade today some broker bullish/ some other bearish
 input double   minPipsRequiredFromYesterday=0.3; 
-input double   minPipsRequiredFromLastWeek=0.6; 
-input double   addPipsToEMA=0.1; 
+input double   minPipsRequiredFromLastWeek=0.0; 
+input double   addPipsToEMA=0.08; 
 
 
 
