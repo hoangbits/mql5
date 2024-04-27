@@ -92,7 +92,8 @@ void OnTrade()
 //+------------------------------------------------------------------+
 
 void handle_new_tick(){
-   string todayBias = get_daily_bias();
+   //string todayBias = get_daily_bias();
+   string todayBias = get_ict_daily_bias();
    //string todayBias = get_previous_week_bias();
    Print("main::todayBias: ", todayBias);      
    // can place max 2 trade per day
@@ -191,7 +192,7 @@ string get_daily_bias() {
    //Print("Previous trading day's " , prev_day, " with open price: ", previous_day_open_price);   
    //Print("Previous trading day's " , prev_day, " with close price: ", previous_day_close_price);
    string bias = "NOBIAS";
-   if(previous_day_open_price > previous_day_close_price)  {
+   if(previous_day_open_price > previous_day_close_price )  {
       bias = "SELL";
    }
    
@@ -390,4 +391,153 @@ void place_trade(ENUM_ORDER_TYPE orderType,double stopLossPrice,double takeProfi
    Print("place_trade::result.request_id: ",result.request_id);
    Print("place_trade11::result.retcode_external", result.retcode_external);
    
+}
+
+
+
+// true if high1-previous day's high higher than two prevous day's hight.
+bool is_wick_higher(double high1, double high2) {
+   return high1 > high2;
+}
+
+// true if low1-previous day's low lower than two prevous day's low.
+bool is_wick_lower(double low1, double low2) {
+   return low1 < low2;
+}
+
+
+// is body higher than wick_high2
+bool is_body_higher(double body_closed1, double high2 ) {
+   return body_closed1 > high2;
+}
+
+// is body lower than wick_low1
+bool is_body_lower(double body_closed1, double low2) {
+   return body_closed1 < low2;
+}
+
+bool is_ict_bullish(double low1, double close1, double low2, double high2) {
+   // wick lower then closed higher
+   if(is_wick_lower(low1,low2) && close1 > low2 && is_body_higher(close1,high2)) {
+      return true;
+   }
+   //if(is_body_higher(close1,high2)) {
+     // return true;
+   //}   
+   return false;
+}
+
+bool is_ict_bearish(double high1, double close1, double low2, double high2) {
+   // wick higher then closed lower
+   if(is_wick_higher(high1, high2) && close1 < high2 && is_body_lower(close1,low2)) {
+      return true;
+   }
+   //if(is_body_lower(close1,low2)) {
+     // return true;
+   //}   
+   return false;
+}
+
+
+
+// green or red
+string get_candle_color(datetime day) {
+   // datetime prev_day = iTime(tradingSymbol, PERIOD_D1, 1);
+   
+   // Get shift to trading day
+   int shift = iBarShift(tradingSymbol, PERIOD_D1, day);
+   
+   double day_open_price = iOpen(tradingSymbol, PERIOD_D1, shift);
+   double day_close_price = iClose(tradingSymbol, PERIOD_D1, shift);
+   
+   
+   if(day_open_price > day_close_price)  {
+      return "RED";
+   }else if(day_open_price < day_close_price)  {
+      return "GREEN";
+   }   
+   return "NO_COLOR";
+}
+
+// previous day 1 is bullish bigger and close above previous day 2
+//bool closed_above_from_previous_wick(double high1,double body_close2) {
+  // return body_close2 > high1; // is body lower
+//}
+
+//bool closed_below_from_previous_wick(double low1,double body_close2) {
+  // return body_close2 < low1; // is body lower
+//}
+
+// low1 is low of yerterday. 1 is every thing on yesterday
+// 2 is everything on 2 previous day
+bool is_bias_neutral(string one_preday_candle_color, double low1, double high1, double body_close1, double low2, double high2, double body_close2) {
+   
+   // previous day candle color
+   
+   
+   
+   // candle 2 bigger than candle1  :if both is_wick_higher and is_wick_higher true   
+   if(is_wick_higher(high1, high2) && is_wick_lower(low1, low2)){
+      
+      // START Can comment out to test     
+      
+      if(one_preday_candle_color == "NO_COLOR") {
+         return true; // neutral
+      } else if(one_preday_candle_color == "GREEN" && is_body_higher(body_close1, high2)){
+         return false; // bias are BULLISH. but accept that duplicated code
+      } else if(one_preday_candle_color == "RED" && is_body_lower(body_close1, low2)){
+         return false;  // bias are bearish but accept duplicated code
+      }
+      
+      // END Can comment out to test
+      return true;
+   } 
+   // candle 2 smallerthan candle1  :if both is_wick_higher and is_wick_higher false   
+   if(is_wick_higher(high1, high2) == false && is_wick_lower(low1, low2) == false ){
+      return true;
+   } 
+   
+   return false;
+
+}
+
+string get_ict_daily_bias() {
+   double previous_day_close_price, previous_day_open_price;          
+   // Get previous trading day
+   datetime prev_day = iTime(tradingSymbol, PERIOD_D1, 1);
+   datetime two_prev_day = iTime(tradingSymbol, PERIOD_D1, 2);
+   
+   // Get shift for previous trading day's close price
+   int shift = iBarShift(tradingSymbol, PERIOD_D1, prev_day);
+   int shift_two_day = iBarShift(tradingSymbol, PERIOD_D1, two_prev_day);
+   
+   // Get previous trading day's close price
+   //previous_day_open_price = iOpen(tradingSymbol, PERIOD_D1, shift);
+   double prev_day_close_price = iClose(tradingSymbol, PERIOD_D1, shift);
+   double prev_day_high_price = iHigh(tradingSymbol, PERIOD_D1, shift);
+   double prev_day_low_price = iLow(tradingSymbol, PERIOD_D1, shift);
+   
+   //two_previous_day_open_price = iOpen(tradingSymbol, PERIOD_D1, shift_two_day);
+   double two_prev_day_close_price = iClose(tradingSymbol, PERIOD_D1, shift_two_day);
+   double two_prev_day_high_price = iHigh(tradingSymbol, PERIOD_D1, shift_two_day);
+   double two_prev_day_low_price = iLow(tradingSymbol, PERIOD_D1, shift_two_day);
+   
+   string one_preday_candle_color = get_candle_color(prev_day);
+   //bool is_bias_neutral = is_bias_neutral(one_preday_candle_color, prev_day_low_price,prev_day_high_price, prev_day_close_price, two_prev_day_low_price, two_prev_day_high_price, two_prev_day_close_price);
+   //Print("is_bias_neutral: ", is_bias_neutral);
+   bool is_bias_neutral = false;
+   if (!is_bias_neutral) {
+      
+      if(one_preday_candle_color == "GREEN" && is_ict_bullish(prev_day_low_price, prev_day_close_price, two_prev_day_low_price, two_prev_day_high_price)){
+         return "BUY";
+      }
+      
+      if(one_preday_candle_color == "RED" && is_ict_bearish(prev_day_high_price, prev_day_close_price, two_prev_day_low_price, two_prev_day_high_price)){
+         return "SELL";
+      }
+   } else 
+   {
+      return "NOBIAS";     
+   }
+   return "NOBIAS";     
 }
