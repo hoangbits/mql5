@@ -13,21 +13,21 @@
 
 //--- input parameters
 
-input double   lotSize=1.5;
-input double   riskPercentPerTrade=0.0;
-input bool     useRiskPercentPerTrade=false;
+input double   lotSize=0.0;
+input double   riskPercentPerTrade=0.2;
+input bool     useRiskPercentPerTrade=true;
 input int      emaPeriod=8;
-input int      checkEveryMinutes=60;
+input int      checkEveryMinutes=12;
 input string   timeFrame="H1";
-input string   tradingSymbol="GBPJPY+";
-input string   symbolUJOnBroker="USDJPY+";
+input string   tradingSymbol="GBPJPY";
+input string   symbolUJOnBroker="USDJPY";
 input bool     requiredClosedBothSideOfEMA=false;
 //--- required pips from previous day to trade today some broker bullish/ some other bearish
-input double   minPipsRequiredFromYesterday=0.3;
+input double   minPipsRequiredFromYesterday=0.28;
 input double   minPipsRequiredFromLastWeek=0.0;
-input double   addPipsToEMA=0.08;
-input double   DistanceToTriggerBE=0.3;
-input double   add_pip_to_sl=0.05;
+input double   addPipsToEMA=0.11;
+input double   DistanceToTriggerBE=0.72;
+input double   add_pip_to_sl=0.2;
 
 double distance_to_trigger_be = DistanceToTriggerBE;
 int EXPERT_MAGIC = 042024;
