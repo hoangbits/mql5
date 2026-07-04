@@ -41,3 +41,12 @@ continuation loses (2019 +11.7 vs -2.0; 2025 +6.7 vs -3.6; and mirror in
 2020/2022/2024). Market alternates continuation-regime vs sweep-regime
 years; killer years ARE sweep years. Continuation on non-sweep days only:
 +6.0 vs +4.9 baseline. -> H2b promoted; H13 router pre-registered.
+
+## 2026-07-04 — H2b fade-switch + H13 router (S1 screens)
+H2b W40: 52.5/+6.1 but 2019 still -2.3, new negs 2023/2026; W60 worse.
+KILLED — trailing-window detectors lag ~2mo then whipsaw; regime needs a
+STRUCTURAL signal, not recent-PnL. H13 router: 52.3/+2.7 < baseline;
+all-sweep-days fade imports H3a trend-year losses. KILLED — dilution.
+Round-1 tally: 19 variant-tests, 0 clean S1 passes, best standalone =
+H1 band (53.8/+6.9, fails only 2025). Next: H5 (last D1 screen), then
+intraday round (H4/H7/H8) which requires deep H1/M1 (grind + max-bars).
