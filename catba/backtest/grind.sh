@@ -42,7 +42,8 @@ INI
   powershell -NoProfile -Command "Get-Process terminal64 -ErrorAction SilentlyContinue | Stop-Process -Force" >/dev/null 2>&1
   sleep 2
   rm -f "$CSV"
-  powershell -NoProfile -Command "Start-Process -FilePath '$TERM' -ArgumentList '/config:$ini'" >/dev/null 2>&1
+  INIWIN=$(cygpath -w "$ini")
+  powershell -NoProfile -Command "Start-Process -FilePath '$TERM' -ArgumentList '/config:$INIWIN'" >/dev/null 2>&1
   echo "[$(date +%H:%M:%S)] launched from ${fy} ..."
   for i in $(seq 1 78); do
     if [ -f "$CSV" ]; then cp "$CSV" "$BT/results/from_${fy}.csv"; echo "  from ${fy}: OK ($(date +%H:%M:%S))"; return 0; fi
