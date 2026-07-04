@@ -71,3 +71,15 @@ not visible at D1 proxy. Windowed runs (2024-start): +44% 2024 / -60%
 Root cause of grind failures found: /config with forward-slash path is
 silently ignored; with backslashes all 5 windows ran in ~3 min (cache
 was already complete from the first 80% download).
+
+## 2026-07-04 — H12 sizing comparison (decade, tester)
+Fixed 0.10 lot: +21.7%, PF 1.07, expectancy +206 JPY/trade, maxDD 14.1%,
+worst year -5.1% — vs risk-2%: -75.7%, PF 0.92, maxDD 85.5%.
+**Signal stream has positive gross expectancy; the risk-% sizing was
+destroying it**: lot ∝ 1/SL-distance over-weights tight-SL trades (the
+1:1-cap trades, which are the worst), and equity-compounding spirals
+losing streaks. ANSWER (user Q): fixed lots decisively better for this
+system as-is; forward tendency mildly positive (PF 1.07) but regime
+years still negative (small). Spawned H12b: risk-% variants that break
+the bad correlation (min-SL-width floor for sizing; risk on fixed base
+not compounding equity; risk-% with lot cap).

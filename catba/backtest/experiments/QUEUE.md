@@ -70,3 +70,10 @@ Prediction: weak/noisy; test last.
 ## H12 â€” Sizing: risk-% vs fixed lot vs DD-throttle  [QUEUED, after edge>0]
 Run identical best-config decade with each sizing. Decision input, not
 edge research. (User question â€” must answer explicitly.)
+
+## H12b — Fixed-risk-defect isolation  [QUEUED]
+Rule variants (decade, tester): (a) risk-% with SL-width floor for the
+sizing calc only (floor = 0.5 x ATR14D1); (b) risk fixed JPY per trade
+(2% of initial deposit, no compounding); (c) fixed lot + annual reset.
+Prediction: (b) ~ fixed-lot result — isolates compounding vs
+inverse-SL-weighting contributions to the -76%-vs+22% gap.
