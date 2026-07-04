@@ -24,6 +24,10 @@ input string   symbolUJOnBroker="USDJPY";
 input bool     requiredClosedBothSideOfEMA=false;
 //--- required pips from previous day to trade today some broker bullish/ some other bearish
 input double   minPipsRequiredFromYesterday=0.28;
+//--- upper cap for yesterday's body; big bodies mean-revert (research H1)
+input double   maxPipsRequiredFromYesterday=999.0;
+//--- size risk from initial deposit instead of compounding equity (research H12b)
+input bool     riskOnInitialDeposit=false;
 input double   minPipsRequiredFromLastWeek=0.0;
 input double   addPipsToEMA=0.11;
 input double   DistanceToTriggerBE=0.72;
@@ -31,6 +35,7 @@ input double   add_pip_to_sl=0.2;
 
 double distance_to_trigger_be = DistanceToTriggerBE;
 int EXPERT_MAGIC = 042024;
+double g_initial_equity = 0.0;   // captured in OnInit; base for riskOnInitialDeposit
 
 datetime previousRange = 0;
 datetime previous_check_sl_range = 0;
@@ -50,6 +55,7 @@ int OnInit()
 //---
 //--- todo copy it to ontick later
    Print("-------------------on init start-------------------");
+   g_initial_equity = AccountInfoDouble(ACCOUNT_EQUITY);
 // TimeCurrent() (which returns the current time in seconds since 1970)
    previousRange = TimeCurrent() / (60 * checkEveryMinutes);
    previous_check_sl_range = TimeCurrent() / (60 * check_sl_every_minutes);
@@ -253,6 +259,10 @@ string get_daily_bias()
      {
       bias = "NOBIAS";
      }
+   if(MathAbs(previous_day_range_pips) > maxPipsRequiredFromYesterday)
+     {
+      bias = "NOBIAS";   // oversized body: continuation edge measurably decays
+     }
 //Print("get_daily_bias::previous_day_range_pips: ", previous_day_range_pips);
 //Print("get_daily_bias::minPipsRequiredFromYesterday: ", minPipsRequiredFromYesterday);
 
@@ -376,7 +386,10 @@ double CalculateLotSize(string symbol, double entry_price, double new_stop_loss,
 //--- money lost on 1.0 lot if price travels slDistance into the stop.
 //--- tickValue is already in the deposit currency, so no manual FX conversion is needed.
    double lossPerLot = (slDistance / tickSize) * tickValue;
-   double riskAmount = AccountInfoDouble(ACCOUNT_EQUITY) * riskPerTrade;
+   double baseEquity = (riskOnInitialDeposit && g_initial_equity > 0.0)
+                       ? g_initial_equity
+                       : AccountInfoDouble(ACCOUNT_EQUITY);
+   double riskAmount = baseEquity * riskPerTrade;
    double lots       = riskAmount / lossPerLot;
 
 //--- snap to the broker's volume step and clamp to min/max
@@ -657,8 +670,12 @@ double OnTester()
    double expectancy   = TesterStatistics(STAT_EXPECTED_PAYOFF);
 
 //--- realized profit per calendar year, from closing deals
+//--- also dump one row per closing deal for offline trade-level analysis
    int    yearNum[];
    double yearNet[];
+   int fdeals = FileOpen("catba_trades.csv", FILE_WRITE|FILE_CSV|FILE_ANSI|FILE_COMMON, ',');
+   if(fdeals!=INVALID_HANDLE)
+      FileWrite(fdeals,"close_time","type","volume","price","profit","swap","commission","reason");
    HistorySelect(0, TimeCurrent());
    int totalDeals = HistoryDealsTotal();
    for(int i=0; i<totalDeals; i++)
@@ -674,6 +691,16 @@ double OnTester()
       double p = HistoryDealGetDouble(ticket, DEAL_PROFIT)
                  + HistoryDealGetDouble(ticket, DEAL_SWAP)
                  + HistoryDealGetDouble(ticket, DEAL_COMMISSION);
+      if(fdeals!=INVALID_HANDLE)
+         FileWrite(fdeals,
+                   TimeToString(t, TIME_DATE|TIME_MINUTES),
+                   (HistoryDealGetInteger(ticket, DEAL_TYPE)==DEAL_TYPE_BUY ? "closebuy" : "closesell"),
+                   HistoryDealGetDouble(ticket, DEAL_VOLUME),
+                   HistoryDealGetDouble(ticket, DEAL_PRICE),
+                   HistoryDealGetDouble(ticket, DEAL_PROFIT),
+                   HistoryDealGetDouble(ticket, DEAL_SWAP),
+                   HistoryDealGetDouble(ticket, DEAL_COMMISSION),
+                   (int)HistoryDealGetInteger(ticket, DEAL_REASON));
       int idx=-1;
       for(int k=0; k<ArraySize(yearNum); k++)
          if(yearNum[k]==mdt.year) { idx=k; break; }
@@ -687,6 +714,8 @@ double OnTester()
         }
       yearNet[idx]+=p;
      }
+   if(fdeals!=INVALID_HANDLE)
+      FileClose(fdeals);
 
 //--- robustness metrics
    int nYears=ArraySize(yearNum), posYears=0;

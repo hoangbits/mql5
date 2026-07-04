@@ -83,3 +83,14 @@ system as-is; forward tendency mildly positive (PF 1.07) but regime
 years still negative (small). Spawned H12b: risk-% variants that break
 the bad correlation (min-SL-width floor for sizing; risk on fixed base
 not compounding equity; risk-% with lot cap).
+
+## 2026-07-04 — H1 tester confirm + H12b isolation (trial count: ~25)
+H1 band at S3 (fixed lots): PF 1.072 vs 1.065 plain — proxy gain does NOT
+transfer; band only removes exposure (~-40% trades, DD 7.5% vs 14.1%,
+profit +10% vs +21.7%). KILLED@tester as edge enhancer. (Fidelity
+escalation catching a proxy false-POSITIVE.)
+H12b(b) risk-2%-of-initial (no compounding): -65.7%, PF 0.96, maxDD 94%.
+**ROOT CAUSE ISOLATED: inverse-SL-distance weighting is the poison, not
+compounding.** Equal lots +21.7% vs same-signal 1/SL-weighted -65.7%.
+Tight-SL trades come from the 1:1 R:R cap in place_trade -> H8 (remove/
+replace SL cap) promoted to queue top; H12b(a) SL-floor sizing secondary.
