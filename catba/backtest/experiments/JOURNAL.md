@@ -18,3 +18,17 @@ regime: 2019 (47.1%), 2025 (45.7%) anti-continuation; 2022 strong trend.
 **Body filter is inverted**: ≥0.28 → 52.1%; ≥0.50 → 51.4%; ≥1.00 → 51.0%.
 Big bodies mean-revert. → spawned H1 (cap/invert), H2 (regime gate),
 H3 (sweep reversal aligns with mean-reversion finding).
+
+## 2026-07-04 — H1 body cap/inversion (S1 screen)
+Best band 0.10<=|body|<=0.60: 53.8% / +6.9 pips (vs 52.2/+4.9 baseline),
+neg years: 2025 only; rescues 2019 (-2.0 -> +2.4); improves/ties 8/9 years.
+FAILS 2025 clause (-3.6 -> -7.1). Verdict: PARTIAL — not standalone;
+composition candidate. Insight confirmed: edge lives in MODERATE bodies;
+floor-only filter is wrong shape.
+
+## 2026-07-04 — H2 trailing win-rate regime gate (S1 screen)
+All 6 variants (W=40/60/90 x thr=0.50/0.55): 2019 negative in every one;
+tight variants poison 2026 (to -29 pips/day). Verdict: KILLED.
+Lesson: trailing win-rate gate LAGS regime turns — shuts after damage,
+reopens after the run. Spawned H2b (fade-switch below 0.45) as new
+pre-registration.
