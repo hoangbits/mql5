@@ -362,40 +362,43 @@ bool isAlreadyPlaceATradeToday()
 //+------------------------------------------------------------------+
 double CalculateLotSize(string symbol, double entry_price, double new_stop_loss, double riskPerTrade)
   {
-   double tickSize = SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_SIZE); // 0.001
-   double tick_value = SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_VALUE); // 100.0
-   double pointValue = tickSize * tick_value; // 0.1
+   double tickSize  = SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_SIZE);  // e.g 0.001 for GBPJPY
+   double tickValue = SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_VALUE); // value of 1 tick per 1.0 lot, in ACCOUNT currency
+   double slDistance = MathAbs(entry_price - new_stop_loss);            // stop distance in price
 
-   double new_stop_lossPips = MathAbs(entry_price - new_stop_loss) / pointValue; // 40 or 50 or 60... pips
+   if(slDistance <= 0.0 || tickSize <= 0.0 || tickValue <= 0.0)
+     {
+      Print("CalculateLotSize:: invalid inputs slDistance=", slDistance,
+            " tickSize=", tickSize, " tickValue=", tickValue);
+      return 0.0;
+     }
 
-   double riskAmount = AccountInfoDouble(ACCOUNT_EQUITY) * riskPerTrade; // e.g 150 usd over 50pip
-   double expect_usd_per_1_lot = riskAmount / new_stop_lossPips; // e.g 3 usd per pip
+//--- money lost on 1.0 lot if price travels slDistance into the stop.
+//--- tickValue is already in the deposit currency, so no manual FX conversion is needed.
+   double lossPerLot = (slDistance / tickSize) * tickValue;
+   double riskAmount = AccountInfoDouble(ACCOUNT_EQUITY) * riskPerTrade;
+   double lots       = riskAmount / lossPerLot;
 
-// 1 lot(1pip) cost 7 usd
-//-> find lot to cost 3 usd
-// lot_value = (1 * 3 as riskamopunt) / 7 asonepipvalue
+//--- snap to the broker's volume step and clamp to min/max
+   double volMin  = SymbolInfoDouble(symbol, SYMBOL_VOLUME_MIN);
+   double volMax  = SymbolInfoDouble(symbol, SYMBOL_VOLUME_MAX);
+   double volStep = SymbolInfoDouble(symbol, SYMBOL_VOLUME_STEP);
+   if(volStep > 0.0)
+      lots = MathFloor(lots / volStep + 0.0000001) * volStep;
+   if(lots < volMin)
+     {
+      Print("CalculateLotSize:: risk-based lot below min (", volMin,
+            ") -> using min; actual risk will exceed the ", riskPerTrade*100, "% target");
+      lots = volMin;
+     }
+   if(lots > volMax)
+      lots = volMax;
+   lots = NormalizeDouble(lots, 2);
 
-
-   Print("CalculateLotSize::tickSize ", tickSize);
-   Print("CalculateLotSize::tickValue ", tick_value);
-   Print("CalculateLotSize::pointValue ", pointValue);
-   Print("CalculateLotSize::riskPerTrade: ", riskPerTrade, " ACCOUNT_EQUITY ", AccountInfoDouble(ACCOUNT_EQUITY));
-
-
-
-   MqlTick latest_price_uj;   // To get the latest price USDJPY
-   SymbolInfoTick(symbolUJOnBroker, latest_price_uj);
-   double one_lot_value_usd = (0.01 / latest_price_uj.ask) * 100000;
-
-   Print("CalculateLotSize::latest_price_uj.ask", latest_price_uj.ask);
-   Print("CalculateLotSize::riskAmount ", riskAmount);
-   Print("CalculateLotSize::new_stop_lossPips ", new_stop_lossPips);
-   Print("CalculateLotSize::expect_usd_per_1_lot ", expect_usd_per_1_lot); //  e.g depends on Risk amount and pip SL
-   Print("CalculateLotSize::one_lot_value_usd", one_lot_value_usd); //  e.g: 7 usd
-
-   double trade_lot_size = NormalizeDouble(expect_usd_per_1_lot / one_lot_value_usd, 2);
-   Print("CalculateLotSize::trade_lot_size ", trade_lot_size);
-   return trade_lot_size;
+   Print("CalculateLotSize:: equity=", AccountInfoDouble(ACCOUNT_EQUITY),
+         " risk=", riskPerTrade, " riskAmount=", riskAmount,
+         " slDistance=", slDistance, " lossPerLot=", lossPerLot, " lots=", lots);
+   return lots;
   }
 
 
