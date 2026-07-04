@@ -31,6 +31,10 @@ input bool     riskOnInitialDeposit=false;
 //--- cap SL so risk<=reward (legacy behavior); tight capped SLs are the
 //--- toxic trades identified in research H12b (research H8a)
 input bool     useRRCapOnSL=true;
+//--- ATR(14,D1)-scaled exits instead of pivot R1/S1 targets (research H8b)
+input bool     useAtrExits=false;
+input double   atrSlMult=1.0;
+input double   atrTpMult=1.5;
 input double   minPipsRequiredFromLastWeek=0.0;
 input double   addPipsToEMA=0.11;
 input double   DistanceToTriggerBE=0.72;
@@ -46,6 +50,9 @@ int      check_sl_every_minutes = 1;
 //--- related to EMA
 int    emaHandle;
 double MA_Buffer[];
+//--- daily ATR for H8b exits
+int    atrHandle;
+double ATR_Buffer[];
 
 
 
@@ -65,6 +72,8 @@ int OnInit()
 
    emaHandle = iMA(tradingSymbol,PERIOD_H1,emaPeriod,0,MODE_EMA,PRICE_CLOSE);
    ArraySetAsSeries(MA_Buffer,true);
+   atrHandle = iATR(tradingSymbol,PERIOD_D1,14);
+   ArraySetAsSeries(ATR_Buffer,true);
 
    handle_new_tick();
 
@@ -158,6 +167,15 @@ void handle_new_tick()
       Print("handle_new_tick:: vS1: ", vS1);
       //--- END handle povot point
 
+      //--- H8b: ATR(14,D1) of the last completed day for scaled exits
+      double atrD1 = 0.0;
+      if(useAtrExits)
+        {
+         if(CopyBuffer(atrHandle,0,1,1,ATR_Buffer)!=1)
+            return;
+         atrD1 = ATR_Buffer[0];
+        }
+
       if(todayBias == "BUY")
         {
          if(!requiredClosedBothSideOfEMA)
@@ -168,13 +186,19 @@ void handle_new_tick()
               {
                //Print("handle_new_tick::START LONG as currentAsk < ema9_hourly: ", currentAsk < MA_Buffer[0]);
                double sl = vS1;
+               double tp = vR1;
                double potential_profit = vR1 - currentAsk;
                double potential_loss = currentAsk - vS1;
                if(useRRCapOnSL && potential_loss > potential_profit)
                  {
                   sl = currentAsk - (potential_profit);
                  }
-               place_trade(ORDER_TYPE_BUY, sl, vR1);
+               if(useAtrExits && atrD1 > 0.0)
+                 {
+                  sl = currentAsk - atrSlMult*atrD1;
+                  tp = currentAsk + atrTpMult*atrD1;
+                 }
+               place_trade(ORDER_TYPE_BUY, sl, tp);
               }
             else
               {
@@ -198,13 +222,19 @@ void handle_new_tick()
                  {
                   Print("handle_new_tick::START SELL as currentBid > ema9_hourly: ", currentAsk > MA_Buffer[0]);
                   double sl = vR1;
+                  double tp = vS1;
                   double potential_profit = currentBid - vS1;
                   double potential_loss = vR1 - currentBid;
                   if(useRRCapOnSL && potential_loss > potential_profit)
                     {
                      sl = currentBid + (potential_profit );
                     }
-                  place_trade(ORDER_TYPE_SELL, sl, vS1);
+                  if(useAtrExits && atrD1 > 0.0)
+                    {
+                     sl = currentBid + atrSlMult*atrD1;
+                     tp = currentBid - atrTpMult*atrD1;
+                    }
+                  place_trade(ORDER_TYPE_SELL, sl, tp);
                  }
                else
                  {

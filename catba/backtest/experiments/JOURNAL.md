@@ -103,3 +103,11 @@ weighting is poisonous across the whole SL distribution**: entry-near-
 pivot days (tight SL -> big lots) are systematically worse trade days.
 SIZING ARC CONCLUSION (H12/H12b/H8a): equal or pure-equity-proportional
 sizing only; never SL-distance-dependent sizing for this signal.
+
+## 2026-07-04 — H8b ATR exits (trial count: ~32)
+All 3 pre-registered variants worse than pivot exits (best: 0.75/1.5 at
+-1.3% PF 1.00 vs pivot +21.7% PF 1.065). KILLED decisively.
+**LESSON: pivot R1/S1 targets are load-bearing** — prior-day structural
+levels, not arbitrary; edge substantially lives in exit placement.
+Coheres with liquidity framing (moves exhaust at prior-day structure).
+Exits are now frozen; research shifts to entry timing (H4) and regime.
