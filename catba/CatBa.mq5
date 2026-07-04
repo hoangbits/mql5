@@ -645,3 +645,88 @@ void update_sl_to_be()
      }
   }
 //+------------------------------------------------------------------+
+//| Tester: per-year P&L + robustness score (written to Common\Files)|
+//+------------------------------------------------------------------+
+double OnTester()
+  {
+   double deposit      = TesterStatistics(STAT_INITIAL_DEPOSIT);
+   double netProfit    = TesterStatistics(STAT_PROFIT);
+   double profitFactor = TesterStatistics(STAT_PROFIT_FACTOR);
+   double trades       = TesterStatistics(STAT_TRADES);
+   double maxDDpct     = TesterStatistics(STAT_EQUITYDD_PERCENT);
+   double expectancy   = TesterStatistics(STAT_EXPECTED_PAYOFF);
+
+//--- realized profit per calendar year, from closing deals
+   int    yearNum[];
+   double yearNet[];
+   HistorySelect(0, TimeCurrent());
+   int totalDeals = HistoryDealsTotal();
+   for(int i=0; i<totalDeals; i++)
+     {
+      ulong ticket = HistoryDealGetTicket(i);
+      if(ticket==0)
+         continue;
+      if(HistoryDealGetInteger(ticket, DEAL_ENTRY) != DEAL_ENTRY_OUT)
+         continue; // only closing deals realize P&L
+      datetime t = (datetime)HistoryDealGetInteger(ticket, DEAL_TIME);
+      MqlDateTime mdt;
+      TimeToStruct(t, mdt);
+      double p = HistoryDealGetDouble(ticket, DEAL_PROFIT)
+                 + HistoryDealGetDouble(ticket, DEAL_SWAP)
+                 + HistoryDealGetDouble(ticket, DEAL_COMMISSION);
+      int idx=-1;
+      for(int k=0; k<ArraySize(yearNum); k++)
+         if(yearNum[k]==mdt.year) { idx=k; break; }
+      if(idx<0)
+        {
+         idx=ArraySize(yearNum);
+         ArrayResize(yearNum, idx+1);
+         ArrayResize(yearNet, idx+1);
+         yearNum[idx]=mdt.year;
+         yearNet[idx]=0.0;
+        }
+      yearNet[idx]+=p;
+     }
+
+//--- robustness metrics
+   int nYears=ArraySize(yearNum), posYears=0;
+   double worstYear=0.0;
+   for(int k=0; k<nYears; k++)
+     {
+      if(yearNet[k]>0) posYears++;
+      if(yearNet[k]<worstYear) worstYear=yearNet[k];
+     }
+   double posFrac      = (nYears>0)   ? (double)posYears/nYears : 0.0;
+   double netPct       = (deposit>0)  ? netProfit/deposit*100.0 : 0.0;
+   double worstYearPct = (deposit>0)  ? worstYear/deposit*100.0 : 0.0; // <= 0
+
+//--- score: reward total return AND consistency; punish worst year + drawdown
+   double score = netPct*posFrac - 3.0*(-worstYearPct) - 1.0*maxDDpct;
+   if(trades < 30)
+      score = -1000.0; // too few trades to be trustworthy
+
+//--- dump to Common\Files\catba_results.csv
+   int fh = FileOpen("catba_results.csv", FILE_WRITE|FILE_CSV|FILE_ANSI|FILE_COMMON, ',');
+   if(fh!=INVALID_HANDLE)
+     {
+      FileWrite(fh,"metric","value");
+      FileWrite(fh,"deposit",deposit);
+      FileWrite(fh,"netProfit",netProfit);
+      FileWrite(fh,"netPct",netPct);
+      FileWrite(fh,"profitFactor",profitFactor);
+      FileWrite(fh,"trades",(int)trades);
+      FileWrite(fh,"maxDDpct",maxDDpct);
+      FileWrite(fh,"expectancy",expectancy);
+      FileWrite(fh,"nYears",nYears);
+      FileWrite(fh,"posYears",posYears);
+      FileWrite(fh,"posFrac",posFrac);
+      FileWrite(fh,"worstYearPct",worstYearPct);
+      FileWrite(fh,"score",score);
+      FileWrite(fh,"YEARS","");
+      for(int k=0; k<nYears; k++)
+         FileWrite(fh, yearNum[k], yearNet[k]);
+      FileClose(fh);
+     }
+   return score;
+  }
+//+------------------------------------------------------------------+
