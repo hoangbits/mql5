@@ -78,3 +78,23 @@ cold:
   against the grid above).
 - Stop conditions: QUEUE empty, or N consecutive kills with no new
   follow-ups (space exhausted at current knowledge).
+
+## 5. False-negative defenses (don't kill real edges with shallow tests)
+
+The funnel above is biased to kill; these rules bound what a kill means.
+
+1. **Scope-tagged kills.** `KILLED@proxy(<measurement>)` = dead at that
+   fidelity only, retestable ONLY at deeper fidelity (never a same-level
+   rerun). `KILLED@mechanism` = the causal story itself falsified.
+2. **LEADS ledger.** Killed hypotheses that showed systematic structure
+   (e.g. H3's regime anti-correlation) are recorded as leads; pure-noise
+   kills are buried.
+3. **Coverage-with-depth.** The taxonomy grid records the fidelity each
+   cell was tested at (D1-proxy / H1-proxy / tester). A cell is not
+   "covered" above its tested depth.
+4. **Near-miss band.** Results within noise of the pass bar are flagged
+   for composition + one deeper-fidelity look, not binarized to dead.
+5. **Budgeted deep-dives.** Every ~5th loop iteration re-tests one
+   KILLED@proxy item at tester fidelity.
+6. **Multi-lens metrics.** Screens report win%, mean, median, and
+   top-day concentration — fat-tailed edges die under win%/mean alone.

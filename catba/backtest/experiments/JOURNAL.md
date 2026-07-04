@@ -50,3 +50,12 @@ all-sweep-days fade imports H3a trend-year losses. KILLED — dilution.
 Round-1 tally: 19 variant-tests, 0 clean S1 passes, best standalone =
 H1 band (53.8/+6.9, fails only 2025). Next: H5 (last D1 screen), then
 intraday round (H4/H7/H8) which requires deep H1/M1 (grind + max-bars).
+
+## 2026-07-04 — Framework amendment: false-negative defenses
+Added scope-tagged kills, LEADS ledger, coverage-with-depth, near-miss
+band, budgeted deep-dives, multi-lens metrics (RESEARCH.md §5).
+Retro-applied: H3 -> KILLED@proxy(D1-c2c), spawns H3i (intraday sweep
+fade at rejection w/ stop beyond raid extreme — tester-fidelity S1).
+H2/H2b -> KILLED@mechanism (detector lag is inherent). H1 -> near-miss.
+LEADS: (1) regime anti-correlation by year; (2) moderate-body carries
+continuation edge; (3) non-sweep-day filter is cheap improvement.
