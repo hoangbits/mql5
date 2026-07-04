@@ -119,3 +119,13 @@ from being positioned BEFORE session displacement** — pullback fills
 ripen outside killzones; restricting entries to KZs keeps the chasing
 trades and drops the early positioning. Server=NY+7 calibrated from
 Friday closes (3/3 agreement).
+
+## 2026-07-04 — H9 BE audit (trial count: ~42) — FIRST SURVIVOR (conditional)
+BE off: +17.4/PF1.044/DD18.6 -> BE helps; keep. ATR-scaled trigger:
+0.2:+9.1/DD14.0 | 0.3:+20.9/PF1.070/DD8.2/worst-2.1 | 0.4:+19.5/DD11.8 |
+0.5:+19.7/DD13.6 | 0.8:+22.8/DD16.0. Fixed 0.72 baseline: +21.7/DD14.1.
+S2: profit plateau 0.3-0.5 (~+20%); DD minimum specific to 0.3 — claim
+conservatively ("0.3-0.5xATR holds profit, DD <= current"); expect 8.2%
+DD to regress. CAVEAT: variant choice used full-decade results incl.
+nominal holdout -> S4 split check required before adopting as default
+(rank stability on 2016-22 vs 2023-26, one look). Status: S2-PASS(cond).

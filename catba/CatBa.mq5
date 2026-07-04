@@ -41,6 +41,9 @@ input int      kz1StartHour=-1;
 input int      kz1EndHour=-1;
 input int      kz2StartHour=-1;
 input int      kz2EndHour=-1;
+//--- break-even management audit (research H9): off switch + ATR trigger
+input bool     useBreakEven=true;
+input double   beAtrMult=0.0;   // >0: BE trigger = mult*ATR(14,D1) instead of DistanceToTriggerBE
 input double   minPipsRequiredFromLastWeek=0.0;
 input double   addPipsToEMA=0.11;
 input double   DistanceToTriggerBE=0.72;
@@ -540,6 +543,14 @@ void place_trade(ENUM_ORDER_TYPE orderType,double new_stop_lossPrice,double take
 //+------------------------------------------------------------------+
 void update_sl_to_be()
   {
+   if(!useBreakEven)
+      return;
+//--- H9: optionally scale the BE trigger with daily ATR
+   if(beAtrMult > 0.0)
+     {
+      if(CopyBuffer(atrHandle,0,1,1,ATR_Buffer)==1 && ATR_Buffer[0] > 0.0)
+         distance_to_trigger_be = beAtrMult * ATR_Buffer[0];
+     }
    MqlTradeRequest request;
    MqlTradeResult  result;
    double new_stop_loss,new_tp, sl, tp;
