@@ -28,6 +28,9 @@ input double   minPipsRequiredFromYesterday=0.28;
 input double   maxPipsRequiredFromYesterday=999.0;
 //--- size risk from initial deposit instead of compounding equity (research H12b)
 input bool     riskOnInitialDeposit=false;
+//--- cap SL so risk<=reward (legacy behavior); tight capped SLs are the
+//--- toxic trades identified in research H12b (research H8a)
+input bool     useRRCapOnSL=true;
 input double   minPipsRequiredFromLastWeek=0.0;
 input double   addPipsToEMA=0.11;
 input double   DistanceToTriggerBE=0.72;
@@ -165,9 +168,9 @@ void handle_new_tick()
               {
                //Print("handle_new_tick::START LONG as currentAsk < ema9_hourly: ", currentAsk < MA_Buffer[0]);
                double sl = vS1;
-               double potential_profit = vR1 - currentAsk;               
+               double potential_profit = vR1 - currentAsk;
                double potential_loss = currentAsk - vS1;
-               if(potential_loss > potential_profit)
+               if(useRRCapOnSL && potential_loss > potential_profit)
                  {
                   sl = currentAsk - (potential_profit);
                  }
@@ -195,9 +198,9 @@ void handle_new_tick()
                  {
                   Print("handle_new_tick::START SELL as currentBid > ema9_hourly: ", currentAsk > MA_Buffer[0]);
                   double sl = vR1;
-                  double potential_profit = currentBid - vS1;                  
+                  double potential_profit = currentBid - vS1;
                   double potential_loss = vR1 - currentBid;
-                  if(potential_loss > potential_profit)
+                  if(useRRCapOnSL && potential_loss > potential_profit)
                     {
                      sl = currentBid + (potential_profit );
                     }

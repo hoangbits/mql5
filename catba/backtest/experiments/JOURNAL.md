@@ -94,3 +94,12 @@ H12b(b) risk-2%-of-initial (no compounding): -65.7%, PF 0.96, maxDD 94%.
 compounding.** Equal lots +21.7% vs same-signal 1/SL-weighted -65.7%.
 Tight-SL trades come from the 1:1 R:R cap in place_trade -> H8 (remove/
 replace SL cap) promoted to queue top; H12b(a) SL-floor sizing secondary.
+
+## 2026-07-04 — H8a: SL-cap removal (trial count: ~29)
+No-cap fixed lots: +21.0% PF 1.059 (≈ unchanged vs cap +21.7% PF 1.065).
+No-cap risk-2%: -59.6% (vs -75.7%) — better but still catastrophic.
+KILLED as fix hypothesis. **The 1:1 cap is not the toxin — inverse-SL
+weighting is poisonous across the whole SL distribution**: entry-near-
+pivot days (tight SL -> big lots) are systematically worse trade days.
+SIZING ARC CONCLUSION (H12/H12b/H8a): equal or pure-equity-proportional
+sizing only; never SL-distance-dependent sizing for this signal.
