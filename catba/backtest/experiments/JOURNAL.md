@@ -32,3 +32,12 @@ tight variants poison 2026 (to -29 pips/day). Verdict: KILLED.
 Lesson: trailing win-rate gate LAGS regime turns — shuts after damage,
 reopens after the run. Spawned H2b (fade-switch below 0.45) as new
 pre-registration.
+
+## 2026-07-04 — H3 PDH/PDL sweep-reversal (S1 screen)
+H3a sweep-only: 50.6% / -1.3, neg 4 years -> KILLED standalone.
+H3b combined: 51.7% / +3.6 < baseline -> KILLED.
+**DISCOVERY: yearly anti-correlation.** Sweep-reversal wins exactly where
+continuation loses (2019 +11.7 vs -2.0; 2025 +6.7 vs -3.6; and mirror in
+2020/2022/2024). Market alternates continuation-regime vs sweep-regime
+years; killer years ARE sweep years. Continuation on non-sweep days only:
++6.0 vs +4.9 baseline. -> H2b promoted; H13 router pre-registered.
