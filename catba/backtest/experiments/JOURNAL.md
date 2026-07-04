@@ -59,3 +59,15 @@ fade at rejection w/ stop beyond raid extreme — tester-fidelity S1).
 H2/H2b -> KILLED@mechanism (detector lag is inherent). H1 -> near-miss.
 LEADS: (1) regime anti-correlation by year; (2) moderate-body carries
 continuation edge; (3) non-sweep-day filter is cheap improvement.
+
+## 2026-07-04 — FULL-DECADE BASELINE (tester, 2% risk, JPY-denominated)
+2016->2026H1: net -75.7%, PF 0.92, maxDD 85.5%, 1684 trades, 5/11 years
+positive. Catastrophic years: 2017 (-54%) and 2025 (-19% on shrunken
+equity; -60% in fresh-start window). LEADS: (1) 2017 = second sweep-regime
+strike, outside D1 autopsy window — regime recurs ~2x/decade; (2) 2020
+lost -13% despite positive raw continuation — intraday mechanics leak
+not visible at D1 proxy. Windowed runs (2024-start): +44% 2024 / -60%
+2025 — engine is strong in-regime; defense is the whole game.
+Root cause of grind failures found: /config with forward-slash path is
+silently ignored; with backslashes all 5 windows ran in ~3 min (cache
+was already complete from the first 80% download).
