@@ -35,6 +35,12 @@ input bool     useRRCapOnSL=true;
 input bool     useAtrExits=false;
 input double   atrSlMult=1.0;
 input double   atrTpMult=1.5;
+//--- entry-hour windows in SERVER time (= NY+7 on Darwinex); -1 = always
+//--- (research H4: ICT killzones; London 9-12, NY 14-17 server)
+input int      kz1StartHour=-1;
+input int      kz1EndHour=-1;
+input int      kz2StartHour=-1;
+input int      kz2EndHour=-1;
 input double   minPipsRequiredFromLastWeek=0.0;
 input double   addPipsToEMA=0.11;
 input double   DistanceToTriggerBE=0.72;
@@ -133,6 +139,16 @@ void OnTrade()
 //+------------------------------------------------------------------+
 void handle_new_tick()
   {
+//--- H4: restrict new entries to configured killzone hours (server time)
+   if(kz1StartHour >= 0)
+     {
+      MqlDateTime now;
+      TimeToStruct(TimeCurrent(), now);
+      bool inKz1 = (now.hour >= kz1StartHour && now.hour < kz1EndHour);
+      bool inKz2 = (kz2StartHour >= 0 && now.hour >= kz2StartHour && now.hour < kz2EndHour);
+      if(!inKz1 && !inKz2)
+         return;
+     }
    string todayBias = get_daily_bias();
 //string todayBias = get_previous_week_bias();
    Print("main::todayBias: ", todayBias);

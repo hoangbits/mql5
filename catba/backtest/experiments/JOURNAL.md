@@ -111,3 +111,11 @@ All 3 pre-registered variants worse than pivot exits (best: 0.75/1.5 at
 levels, not arbitrary; edge substantially lives in exit placement.
 Coheres with liquidity framing (moves exhaust at prior-day structure).
 Exits are now frozen; research shifts to entry timing (H4) and regime.
+
+## 2026-07-04 — H4 killzones (trial count: ~36)
+All 4 variants worse than unrestricted (best: union +1.2% PF 1.005 vs
++21.7% PF 1.065). KILLED. **Inverse-ICT lesson: this EA's winners come
+from being positioned BEFORE session displacement** — pullback fills
+ripen outside killzones; restricting entries to KZs keeps the chasing
+trades and drops the early positioning. Server=NY+7 calibrated from
+Friday closes (3/3 agreement).
