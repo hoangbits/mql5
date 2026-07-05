@@ -344,3 +344,10 @@ system (-76%->+23% via sizing), not finding alpha. NOT high-confidence;
 forward-demo essential. Value = risk management (slow safe growth), not
 signal. Wrote SYSTEM_CARD.md. Honest expectation: ~2%/yr at 0.5%, 15-22%
 DD, losing years expected.
+
+## 2026-07-05 [LOOP] — Generalization: EURJPY (trial ~79)
+Exact reference params, NO re-tuning. EURJPY decade: +3.4% net, PF 1.016,
+DD 12.1%, 8/11 green, worst -9.4%. POSITIVE (not inverted) -> the
+continuation edge is REAL, not pure GBPJPY-overfit — but much weaker/
+lower-quality than GBPJPY (+23%/PF1.07). Partial corroboration. AUDJPY,
+CADJPY pending.
