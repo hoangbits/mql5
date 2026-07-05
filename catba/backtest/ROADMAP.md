@@ -109,3 +109,16 @@ marginal edge). Research effectively complete (~81 trials).
 - Increase risk to chase returns (amplifies a fragile edge -> ruin risk).
 - Add more parameters/signals (overfitting; search is done).
 - Trust the +23% as an expectation (it's an optimistic, pair-specific upper bound).
+
+## POST-HANDOFF IMPROVEMENTS (2026-07-05, GBPJPY-only focus) — v1.1
+Two disciplined improvements found AFTER the initial handoff:
+1. emaPeriod 8->13 (H17): walk-forward+PBO validated on GBPJPY; GBPJPY-SPECIFIC
+   (fails cross-pair) -> medium confidence, forward-confirm.
+2. minStopPips=30 (loss-mode analysis): skip tight-stop setups. ROBUST — passes
+   BOTH walk-forward (OOS Sharpe 0.93, no decay) AND cross-instrument (improves
+   every JPY pair) -> HIGH confidence, a real general principle.
+Result: Sharpe 0.45->0.87, OOS 0.18->0.93, decade +23%->+56% @0.5%.
+Search is now at DIMINISHING RETURNS (~132 trials): the clean loss patterns are
+exploited; further mining scrapes noise at rising overfit risk. RECOMMEND: bank
+v1.1, forward-demo. Remaining honest gaps unchanged: unproven forward, DSR~0 at
+full haircut, GBPJPY-only.
