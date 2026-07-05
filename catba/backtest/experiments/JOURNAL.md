@@ -209,3 +209,23 @@ This is the cumulative validated system; answers user's risk-vs-fixed
 and grow-safely questions. CAVEAT: on the live ~$831 account even min
 lot (0.01) is ~5% risk on a 70-pip stop; sizing only becomes accurately
 0.5% once equity > ~$1700. Next gate: S5 forward-demo.
+
+## 2026-07-05 — H15 weekly-open premium/discount: ICT framing is INVERTED (trial ~68)
+ICT primary (premium->SELL, draw to discount): 47.6% / -4.8 pips, 7 neg
+years -> KILLED. CONTINUATION variant (premium->BUY): 52.4% / +4.8, only
+2 neg years (2018,2025) -> WINS but is ~identical to the existing daily-
+continuation edge (52.2/+4.9); "above weekly open" == "recent up momentum".
+No NEW edge, but decisive META-conclusion below. (Minor: weekly-cont
+gets 2019 positive where daily-cont was negative — same edge, diff
+reference; not worth splitting.)
+
+## ICT-for-GBPJPY CONCLUSION (answers user question)
+Every ICT REVERSAL/liquidity concept tested is dead or inverted here:
+  - PDH/PDL sweep-fade (H3/H3i): killed both fidelities
+  - D1 FVG revert (H5): killed
+  - Killzone timing (H4): killed
+  - Weekly premium/discount revert (H15): INVERTED (loses; continuation wins)
+GBPJPY at the daily scale is a CONTINUATION/trend market; ICT's
+reversal-based bias toolkit is the wrong framework for it. The EA's
+original continuation premise is MORE correct for this pair than ICT.
+Remaining: H11 SMT (reversal-flavored, low prior), H7 Po3 (entry not bias).
