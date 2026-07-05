@@ -244,3 +244,15 @@ chance the decade ends net-negative even with the edge (thin edge, real
 uncertainty). Confirms 0.5-1% sane, 2% ruinous. Kelly is a CEILING
 assuming edge is real+stationary; stay well below it given backtest
 uncertainty. -> Phase 3 system-card input.
+
+## 2026-07-05 [LOOP] — SMT event study M15+H1 (interim, trial ~70)
+Data: full-decade tester export (GBPJPY/GBPUSD/USDJPY M15+H1, 2016-2026) —
+the data blocker is SOLVED via the ExportSMT tester EA. Event study, FADE
+the divergence: forward cum return NEGATIVE almost everywhere:
+  M15 A(vGBPUSD) -14..-22 | M15 B(vUSDJPY) -11..-14 | resid -15..-78 |
+  H1 A -12 | H1 B +12.5@h8 but 50.8% win (noise, <cost).
+-> divergences predict CONTINUATION not reversal (fade LOSES). Consistent
+with GBPJPY = continuation market. LEAD: inverted (continuation-confirmed-
+by-divergence) is a 5/6-cell plateau but that's momentum = the existing
+edge, not SMT. Pending: M5+M30 to honor the full TF request before final
+verdict.
