@@ -134,3 +134,14 @@ lenient-IS-then-OOS-intersection funnel for false negatives (Harvey &
 Liu); MinBTL < 2·ln(N)/E[maxSR]² minimum backtest length; CPCV > walk-
 forward at preventing false discoveries; White's Reality Check / Hansen
 SPA as formal best-of-universe tests.
+
+## 7. Cross-instrument generalization (orthogonal to walk-forward)
+Walk-forward and PBO/CSCV validate only across TIME on the SAME instrument,
+so they CANNOT catch instrument-specific overfitting. A parameter fitted to
+one symbol's character stays stable across that symbol's time periods and
+PASSES walk-forward + PBO while being pure curve-fit. ALWAYS add a cross-
+instrument check: apply the optimized config unchanged to related instruments.
+A real edge shows some positive transfer; a config that improves the home
+symbol while degrading related ones is overfit. (Evidence H17: ema21 passed
+walk-forward OOS+22.6% and PBO 8.3% on GBPJPY but made EURJPY/AUDJPY/CADJPY
+all worse -> KILLED.)

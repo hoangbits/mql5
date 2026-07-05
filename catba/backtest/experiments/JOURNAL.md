@@ -413,3 +413,17 @@ WALK-FORWARD PASSED: IS winner OOS(2023-26) +22.6% (rank 2/36) vs default
 low prior; the disciplined optimization found genuine signal. emaPeriod is
 the dominant lever. PENDING: cross-pair generalization with the new params
 (the ema8 version failed cross-pair; must re-check ema21).
+
+## 2026-07-05 — H17 cross-pair check — OVERFIT CAUGHT (trial ~120) — KILLED
+Applied the walk-forward WINNER (ema21/addpip0.05) to the other JPY pairs:
+  EURJPY +3.4% -> -2.8% (flipped NEG) | AUDJPY -4.6% -> -7.9% | CADJPY -7.4% -> -9.3%.
+The ema21 optimum made GBPJPY +44% but made ALL 3 other pairs WORSE. Classic
+INSTRUMENT-SPECIFIC OVERFIT — yet it PASSED walk-forward (OOS+22.6%) AND
+PBO (8.3%). LESSON: walk-forward + PBO test only across TIME on the SAME
+instrument; they cannot catch instrument-specific overfitting. Cross-
+instrument generalization is an ORTHOGONAL check that caught it.
+DECISION: do NOT adopt ema21; keep emaPeriod=8 (less-optimized = less
+overfit). The +44% is a GBPJPY-specific mirage. H17 KILLED. Final answer to
+'can params make it better?': NO robust improvement exists; the apparent one
+was overfit, caught only by cross-pair. Trial count ~120. The edge stands as
+marginal + GBPJPY-specific. Discipline worked again.
