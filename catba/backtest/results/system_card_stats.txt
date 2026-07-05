@@ -1,0 +1,11 @@
+=== CatBa reference config — risk-adjusted stats (fixed 0.10 lot) ===
+  FULL 2016-26   n=127mo  Sharpe(ann)= 0.45  Sortino= 0.72  pos=54.3%  net= +25.2%
+  IS 2016-22     n= 84mo  Sharpe(ann)= 0.62  Sortino= 1.00  pos=57.1%  net= +21.3%
+  OOS 2023-26    n= 43mo  Sharpe(ann)= 0.18  Sortino= 0.29  pos=48.8%  net=  +3.9%
+
+  PSR(true SR>0)         =  92.6%   (skew=-0.02, kurt=2.8)
+  N trials               = 78
+  SR* (null max, monthly)= 0.454   (trial-SR var est 0.0346)
+  DSR (haircut vs SR*)   =   0.0%   <- prob edge is real after 78-trial haircut
+
+  KEY: OOS 2023-26 Sharpe = 0.18 (untouched holdout — the honest number)

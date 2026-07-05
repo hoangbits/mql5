@@ -333,3 +333,14 @@ with `if(verboseLog)`. Reference config bit-identical after (+20.89%/PF1.07/
 DD8.2%) — logging change, zero behavior change. Prevents the GB-scale
 Experts logs (were 13GB) during long tester sweeps + the forward-demo.
 Turn verboseLog=true only for debugging.
+
+## 2026-07-05 — Phase 3.3 system card (DSR/walk-forward) — SOBERING
+Ann Sharpe: FULL 0.45 / IS(2016-22) 0.62 / OOS(2023-26) 0.18 -> edge HALVED
+out-of-sample. PSR(true SR>0)=92.6% single-test, but DSR ~0% after 78-trial
+haircut (full-sample Sharpe below best-of-78 null-max). Only positive
+evidence: OOS still +4% (Sharpe 0.18), weak but not negative.
+VERDICT: marginal, low-quality edge. The real win was FIXING the broken
+system (-76%->+23% via sizing), not finding alpha. NOT high-confidence;
+forward-demo essential. Value = risk management (slow safe growth), not
+signal. Wrote SYSTEM_CARD.md. Honest expectation: ~2%/yr at 0.5%, 15-22%
+DD, losing years expected.
