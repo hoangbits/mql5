@@ -7,8 +7,8 @@
 #property version   "1.00"
 
 string          Syms[3]    = {"GBPJPY","GBPUSD","USDJPY"};
-ENUM_TIMEFRAMES Tfs[2]     = {PERIOD_M15, PERIOD_H1};
-string          TfNames[2] = {"M15","H1"};
+ENUM_TIMEFRAMES Tfs[4]     = {PERIOD_M5, PERIOD_M15, PERIOD_M30, PERIOD_H1};
+string          TfNames[4] = {"M5","M15","M30","H1"};
 
 int OnInit()
   {
@@ -62,7 +62,7 @@ void export_one(string sym, ENUM_TIMEFRAMES tf, string tfname)
 double OnTester()
   {
    for(int i=0; i<3; i++)
-      for(int j=0; j<2; j++)
+      for(int j=0; j<4; j++)
          export_one(Syms[i], Tfs[j], TfNames[j]);
    return 0.0;
   }
