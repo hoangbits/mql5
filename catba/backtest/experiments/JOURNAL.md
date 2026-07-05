@@ -229,3 +229,18 @@ GBPJPY at the daily scale is a CONTINUATION/trend market; ICT's
 reversal-based bias toolkit is the wrong framework for it. The EA's
 original continuation premise is MORE correct for this pair than ICT.
 Remaining: H11 SMT (reversal-flavored, low prior), H7 Po3 (entry not bias).
+
+## 2026-07-05 — Monte-Carlo drawdown / risk-of-ruin (reference config)
+Input: 1704 ref trades (fixed 0.10 lot, BE0.3). Per-trade: mean +2.37 pips,
+median +17.5, win 54%, sum +4036 pips. Profile = win-small-often, lose-big-
+occasionally (median >> mean).
+Kelly-optimal ~3.2% risk/trade (half-Kelly ~1.6%); 0.5% default = 0.16x
+Kelly (very conservative). 20k sims, reshuffle + block(30) bootstrap:
+  0.5%: medDD 13-15%, 95%DD ~22%, tail ~26-40%; P(end<0)=8.5% (block)
+  1.0%: medDD 24-28%, 95%DD ~40%, P(DD>30%)=24-37%
+  2.0%: medDD 45-50%, P(DD>50%)=33-49%  -> reckless
+KEY: historical 11% DD was FAVORABLE; plan for ~15-22% at 0.5%. ~8.5%
+chance the decade ends net-negative even with the edge (thin edge, real
+uncertainty). Confirms 0.5-1% sane, 2% ruinous. Kelly is a CEILING
+assuming edge is real+stationary; stay well below it given backtest
+uncertainty. -> Phase 3 system-card input.
