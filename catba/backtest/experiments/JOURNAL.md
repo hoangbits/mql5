@@ -159,3 +159,25 @@ now fully exhausted. REVIEW PASS coverage check: regime-gate dimension
 still has UNTESTED structural candidates (ADX(D1), ATR-slope) — the
 exact class H2's kill pointed to. Registered H14. Entry-location
 dimension untested beyond current EMA pullback (H7 Po3, OTE pending).
+
+## 2026-07-05 — H14 ADX gate KILLED@tester + REFERENCE CONFIG emerges (trial ~56)
+D1 proxy said ADX>20 rescues 2025 (+11 pips). TESTER says opposite:
+ADX20 gate removed 261 trades that were net POSITIVE -> total +9.2% (vs
+ref +20.9%), DD worse (12.8 vs 8.2), and 2025 WORSE (-107k vs -34k),
+2026 worse. ADX25 also worse. KILLED@tester — 2nd fidelity-escalation
+false-positive catch (after H1). Lesson: D1 close-to-close cannot predict
+how the EA's pullback/pivot/BE mechanics interact with a filtered day set.
+
+** REFERENCE CONFIG (validated, current best) — the cumulative payoff **
+Config: fixed 0.10 lots + BE trigger 0.3xATR(14,D1); everything else stock.
+Decade 2016-2026H1: net +20.9%, PF 1.070, maxDD 8.2%, expectancy +196
+JPY/trade, 7/11 positive years, WORST YEAR only -2.1%.
+Per-year (JPY): 16:+57k 17:+30k 18:-11k 19:+86k 20:+20k 21:+26k 22:+132k
+23:-8k 24:+138k 25:-34k 26:-33k. No catastrophic year.
+vs original 2%-risk stock EA: -75.7%, maxDD 85.5%.
+ROOT LESSON PROVEN: the signal loses only MILDLY in bad regimes; the
+risk-% sizing turned mild losses into account death. Fix sizing (H12) +
+ATR-scaled BE (H9) = a viable system. Regime years now a drag, not a
+bomb. Provenance: H12 (mechanism-proven) + H9 (S4/OOS-validated); not
+holdout-mined. Return figure is at 0.10 lots (tiny leverage); PF/DD are
+the scale-free facts.

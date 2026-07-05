@@ -44,6 +44,10 @@ input int      kz2EndHour=-1;
 //--- break-even management audit (research H9): off switch + ATR trigger
 input bool     useBreakEven=true;
 input double   beAtrMult=0.0;   // >0: BE trigger = mult*ATR(14,D1) instead of DistanceToTriggerBE
+//--- structural regime gate: only trade when yesterday's D1 ADX(14) is
+//--- above threshold, i.e. enough directional structure (research H14)
+input bool     useAdxGate=false;
+input double   adxThreshold=20.0;
 input double   minPipsRequiredFromLastWeek=0.0;
 input double   addPipsToEMA=0.11;
 input double   DistanceToTriggerBE=0.72;
@@ -62,6 +66,9 @@ double MA_Buffer[];
 //--- daily ATR for H8b exits
 int    atrHandle;
 double ATR_Buffer[];
+//--- daily ADX for H14 regime gate
+int    adxHandle;
+double ADX_Buffer[];
 
 
 
@@ -83,6 +90,8 @@ int OnInit()
    ArraySetAsSeries(MA_Buffer,true);
    atrHandle = iATR(tradingSymbol,PERIOD_D1,14);
    ArraySetAsSeries(ATR_Buffer,true);
+   adxHandle = iADX(tradingSymbol,PERIOD_D1,14);
+   ArraySetAsSeries(ADX_Buffer,true);
 
    handle_new_tick();
 
@@ -150,6 +159,14 @@ void handle_new_tick()
       bool inKz1 = (now.hour >= kz1StartHour && now.hour < kz1EndHour);
       bool inKz2 = (kz2StartHour >= 0 && now.hour >= kz2StartHour && now.hour < kz2EndHour);
       if(!inKz1 && !inKz2)
+         return;
+     }
+//--- H14: require directional structure (yesterday's completed D1 ADX)
+   if(useAdxGate)
+     {
+      if(CopyBuffer(adxHandle,0,1,1,ADX_Buffer)!=1)
+         return;
+      if(ADX_Buffer[0] < adxThreshold)
          return;
      }
    string todayBias = get_daily_bias();
