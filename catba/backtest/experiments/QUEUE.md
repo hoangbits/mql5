@@ -85,3 +85,12 @@ trade only when ATR14 today > ATR14 20 days ago (rising-vol regime;
 1 variant). Metric: same D1 continuation screen as H2 for comparability.
 Prediction: unlike trailing win-rate, ADX/ATR describe the market's
 STATE not our PnL; should shut off 2019/2025 without lagging whipsaw.
+
+## H11b — SMT event study (multi-TF, holding-period)  [S1-RUNNING, loop]
+Data via ExportSMT.ex5 (tester auto-downloads GBPJPY/GBPUSD/USDJPY M15+H1).
+Signals at London open (server h9): GBPJPY vs GBPUSD, vs USDJPY, and
+residual of GBPJPY on synthetic GBPUSD*USDJPY. Event study: forward cum
+return day+1..+10 -> best TF (smoothest drift) + holding half-life.
+Plateau across {TF, session window, strictness, swing lookback} + per-year
+consistency required. Prediction: LOW prior (continuation market); expect
+fast decay so "hold till opposite SMT" likely too long. Falsify, don't confirm.
