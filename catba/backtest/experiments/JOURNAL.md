@@ -427,3 +427,14 @@ overfit). The +44% is a GBPJPY-specific mirage. H17 KILLED. Final answer to
 'can params make it better?': NO robust improvement exists; the apparent one
 was overfit, caught only by cross-pair. Trial count ~120. The edge stands as
 marginal + GBPJPY-specific. Discipline worked again.
+
+## 2026-07-05 — GBPJPY-only: adopt emaPeriod=13 (trial ~120, opt-in decision)
+User focusing GBPJPY-only -> cross-pair failure less disqualifying; the
+GBPJPY-relevant tests (walk-forward OOS+22.6%, PBO 8.3%) support ema13.
+Set emaPeriod default 8->13. Shipping default (ema13, risk0.5% equity-prop):
++42.9%/PF1.119/DD11.2/8-11green. Signal (fixed-lot): Sharpe 0.72 (vs 0.45),
+OOS Sharpe 0.80 (NO decay; ema8 decayed to 0.18), skew +0.66. Strongest
+evidence yet the edge is real ON GBPJPY. CAVEATS kept: GBPJPY-specific,
+DSR~0 at 120-trial haircut, unproven forward -> demo A/B ema8 vs ema13.
+BUG FIX: place_trade now checks useRiskPercentPerTrade (was dead — checked
+only riskPercentPerTrade>0; caused grid to run risk-% when set 'false').

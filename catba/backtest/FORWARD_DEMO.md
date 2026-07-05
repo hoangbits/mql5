@@ -61,3 +61,13 @@ FromDate/ToDate set to the demo window.
 - Start at **0.5%** (default). Only raise toward 1% after a live-forward
   quarter that holds up. Never 2% (41% backtest DD).
 - Remember the sub-$1700 min-lot over-risk: keep balance in mind.
+
+## A/B demo: emaPeriod 8 vs 13 (added 2026-07-05)
+H17 found emaPeriod=13 substantially better on GBPJPY (Sharpe 0.45->0.72,
+OOS Sharpe held at 0.80) BUT it is GBPJPY-specific (failed cross-pair), so
+confirm it forward before trusting. Run TWO demo charts side by side:
+  - Chart A: GBPJPY H1, CatBa with emaPeriod=8  (the conservative original)
+  - Chart B: GBPJPY H1, CatBa with emaPeriod=13 (the H17 candidate, new default)
+Everything else identical (risk 0.5%, beAtrMult 0.3, refStopPips 70). Log
+both; after >=4 weeks compare fills AND which one's live trades track its
+backtest better. Let live data pick the EMA — do not commit on backtest alone.

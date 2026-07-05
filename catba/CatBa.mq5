@@ -16,7 +16,8 @@
 input double   lotSize=0.0;
 input double   riskPercentPerTrade=0.5;
 input bool     useRiskPercentPerTrade=true;
-input int      emaPeriod=8;
+input int      emaPeriod=13;   // 13 > default 8 on GBPJPY (H17 walk-forward+PBO;
+                               // GBPJPY-specific, cross-pair failed — forward-confirm)
 input int      checkEveryMinutes=12;
 input string   timeFrame="H1";
 input string   tradingSymbol="GBPJPY";
@@ -542,7 +543,7 @@ void place_trade(ENUM_ORDER_TYPE orderType,double new_stop_lossPrice,double take
         }
 
    double trade_lot_size = lotSize;
-   if(riskPercentPerTrade > 0.0)
+   if(useRiskPercentPerTrade && riskPercentPerTrade > 0.0)
      {
       //--- Calculate lot size for riskPercentPerTrade% risk
       trade_lot_size = CalculateLotSize(tradingSymbol, entry_price, new_stop_lossPrice, riskPercentPerTrade/100);

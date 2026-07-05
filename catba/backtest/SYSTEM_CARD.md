@@ -65,3 +65,19 @@ GBPJPY-specific, NOT a robust cross-pair continuation edge**, and GBPJPY's
 result leans on 2 lucky trending years (2022/2024). This DOWNGRADES
 confidence further: treat +23% as an optimistic upper bound, not an
 expectation. Forward-demo is essential; if traded, 0.5% only.
+
+## GBPJPY-ONLY UPDATE (2026-07-05): emaPeriod 8 -> 13
+User is trading GBPJPY only, so cross-pair failure is less disqualifying;
+the relevant tests (walk-forward + PBO on GBPJPY) PASS. New default emaPeriod=13.
+  Decade @0.5%: +42.9% (vs +23.2%), PF 1.119 (vs 1.062), DD 11.2%, 8/11 green,
+  worst yr -2.7%. Signal quality (fixed-lot): ann Sharpe 0.72 (vs 0.45),
+  Sortino 1.43, skew +0.66.
+  KEY: OOS 2023-26 Sharpe = 0.80 — did NOT decay (ema8 decayed to 0.18).
+  This is the strongest evidence ema13 is GBPJPY's right EMA, not a lucky fit.
+CAVEATS (still honest): (1) GBPJPY-SPECIFIC — the ema13 gain does NOT transfer
+to EURJPY/AUDJPY/CADJPY (all got worse); it exploits GBPJPY's particular
+character, so it may be more exposed to regime shifts than a universal edge.
+(2) DSR ~0% at the 120-trial haircut (ultra-conservative). (3) Never
+forward-tested. -> Forward-demo BOTH ema8 and ema13 to confirm before trusting.
+Also fixed a dead input this session: place_trade now respects
+useRiskPercentPerTrade (was checking only riskPercentPerTrade>0).
