@@ -400,3 +400,16 @@ is risk management + an honest characterization, NOT a proven money-maker.
 Whether to trade it live is a judgment call on a thin, fragile edge; if
 traded, tiny size (0.5%), and only after forward-demo. The process worked:
 it prevented shipping false confidence.
+
+## 2026-07-05 — H17 core-param walk-forward optimization — REAL IMPROVEMENT (trial ~117)
+36-config grid (emaPeriod{5,8,13,21} x addPipsToEMA{0.05,0.11,0.20} x
+minBody{0.14,0.28,0.42}), each full decade. EMA plateau (all else default):
+  ema5 +6.9/PF1.02 | ema8(default) +23.2/PF1.06 | ema13 +42.9/PF1.12/8green |
+  ema21 +36.1/PF1.12/DD7.7. -> emaPeriod=8 was TOO FAST; 13-21 much better.
+IS winner ema21/addpip0.05/minbody0.28: FULL +43.6%, PF1.127, DD8.7%, 9/11
+green, 2025 RESCUED (+96k vs default -34k), expectancy +438/trade.
+WALK-FORWARD PASSED: IS winner OOS(2023-26) +22.6% (rank 2/36) vs default
++4.5%. PBO(CSCV, 252 splits) = 8.3% (<<50%) -> NOT overfit. This BEAT the
+low prior; the disciplined optimization found genuine signal. emaPeriod is
+the dominant lever. PENDING: cross-pair generalization with the new params
+(the ema8 version failed cross-pair; must re-check ema21).
