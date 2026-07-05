@@ -288,3 +288,22 @@ That is momentum = the EXISTING CatBa edge, not SMT; could be tested later
 as an entry/bias refinement, but is out of scope for the SMT question.
 DATA asset: 12 full-decade CSVs (GBPJPY/GBPUSD/USDJPY x M5/M15/M30/H1) now
 producible on demand via ExportSMT.ex5 (tester auto-download).
+
+## 2026-07-05 [LOOP] — H16 divergence-confirmed continuation — KILLED (trial ~74)
+FIRST PASS looked huge: A CONFIRM 64.7% win/+29 pips, C CONFIRM 67%/+52 vs
+PLAIN 51.5%/+3.3. CAUGHT A LOOK-AHEAD LEAK: outcome was today's full D1
+open->close while the divergence signal sits INSIDE that window -> morning
+strength mechanically correlates with up-close. Re-ran forward-FROM-WINDOW-
+END (no leak):
+  PLAIN            h0 -0.6  h1 +1.0  h2 -1.7  h3 -4.4
+  A CONFIRM        h0 +1.5  h1 +9.8  h2 +18.0 h3 +9.8
+  C CONFIRM        h0 +18.7 h1 +27.4 h2 +31.1 h3 +24.6
+Looks positive BUT fails discipline: (1) C CONFIRM negative in recent years
+[2023,2025,2026] -> no holdout survival; (2) CONTRADICT sometimes also
+positive/high win (h1 C-contradict 59.8%) -> split not cleanly sorting;
+(3) thin n~106 (~10/yr). VERDICT: divergence confirmation does NOT robustly
+beat plain continuation once the leak is removed; edge is small, thin,
+muddy, and absent in recent years. Confirms "relative strength == momentum,
+redundant." SMT adds nothing tradable to CatBa.
+METHOD NOTE: the initial +29/+52 was a classic backtest leak; only forward-
+from-signal measurement is valid for a signal computed intraday.

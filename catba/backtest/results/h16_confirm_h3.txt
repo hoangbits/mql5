@@ -1,0 +1,9 @@
+H16 divergence-confirmed continuation (TF=H1); baseline = PLAIN
+
+  PLAIN (all bias days)        n=2716  win=49.8%  avg= -4.4 pips  neg_yrs=[2016, 2020, 2023, 2025, 2026]
+  --- method A (vs GBPUSD) ---
+  A CONFIRM (div==bias)        n= 286  win=53.5%  avg= +9.8 pips  neg_yrs=[2022, 2023, 2025, 2026]
+  A CONTRADICT (div!=bias)     n= 275  win=47.3%  avg= -6.9 pips  neg_yrs=[2016, 2020, 2021, 2023, 2025, 2026]
+  --- method C (residual) ---
+  C CONFIRM (resid dir==bias)  n= 106  win=50.9%  avg=+24.6 pips  neg_yrs=[2018, 2019, 2020, 2021, 2023, 2025]
+  C CONTRADICT                 n= 112  win=50.0%  avg=-23.1 pips  neg_yrs=[2016, 2020, 2022, 2023, 2026]
