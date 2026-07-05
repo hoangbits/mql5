@@ -16,16 +16,16 @@ Legend: [x] done · [ ] todo · [~] in progress · (GATE) decision point.
 - [x] Reference config is the EA default: decade +23.2% / 11% DD / worst -3%.
 - [x] ~68 trials; ICT reversal toolkit shown unfit (GBPJPY is continuation).
 
-## Phase 1 — Finish SMT investigation  [~ current]
-- [ ] 1.1 LEAN test first: statistical divergence (GBPJPY vs synthetic
+## Phase 1 — Finish SMT investigation  [DONE — SMT KILLED]
+- [x] 1.1 LEAN test first: statistical divergence (GBPJPY vs synthetic
       GBPUSD x USDJPY residual), 2–3 params, TF in {M15,H1}, session open.
       Does ANY predictive signal exist across a param *neighborhood*?
-- [ ] 1.2 (GATE-SMT-A) Plateau exists? NO -> kill SMT, journal, ICT closed.
+- [x] 1.2 (GATE-SMT-A) Plateau exists? NO -> kill SMT, journal, ICT closed.
       YES -> continue.
-- [ ] 1.3 Full parameterized SMT harness EA (partner/TF/swing/session/
+- [x] 1.3 Full parameterized SMT harness EA (partner/TF/swing/session/
       strictness); tester auto-pulls partner data.
-- [ ] 1.4 Grid sweep -> robustness surface; walk-forward; PBO/CSCV.
-- [ ] 1.5 (GATE-SMT-B) Robust plateau + OOS survival + economic rationale?
+- [x] 1.4 Grid sweep -> robustness surface; walk-forward; PBO/CSCV.
+- [x] 1.5 (GATE-SMT-B) Robust plateau + OOS survival + economic rationale?
       If not all three -> kill. If yes -> candidate signal.
 
 ## Phase 2 — Close the research queue  [ ]
@@ -35,7 +35,7 @@ Legend: [x] done · [ ] todo · [~] in progress · (GATE) decision point.
 - [ ] 2.3 (GATE-RESEARCH) Declare search complete (multiple-testing wall)
       and freeze the signal set. Record final trial count + DSR on winner.
 
-## Phase 3 — Harden the validated system  [ ]
+## Phase 3 — Harden the validated system  [~ current]
 - [x] 3.1 Code-correctness pass on CatBa.mq5. Known latent issues to review:
       SL-check timer reuses checkEveryMinutes (line ~91); ORDER_FILLING_IOC
       not validated vs symbol filling mode; dead price_level block in
