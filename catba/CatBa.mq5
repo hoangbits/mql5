@@ -57,6 +57,9 @@ input bool     useAdxGate=false;
 input double   adxThreshold=20.0;
 input double   minPipsRequiredFromLastWeek=0.0;
 input double   addPipsToEMA=0.11;
+//--- loss-mode filter: skip entries whose pivot-based SL is closer than this
+//--- many pips (tight-SL setups win only ~38% — loss_analysis). 0 = off.
+input double   minStopPips=30.0;
 input double   DistanceToTriggerBE=0.72;
 input double   add_pip_to_sl=0.2;
 //--- how often (minutes) to run break-even management. NOTE: this was
@@ -247,7 +250,8 @@ void handle_new_tick()
                   sl = currentAsk - atrSlMult*atrD1;
                   tp = currentAsk + atrTpMult*atrD1;
                  }
-               place_trade(ORDER_TYPE_BUY, sl, tp);
+               if(minStopPips <= 0.0 || (currentAsk - sl) >= minStopPips*0.01)
+                  place_trade(ORDER_TYPE_BUY, sl, tp);
               }
             else
               {
@@ -283,7 +287,8 @@ void handle_new_tick()
                      sl = currentBid + atrSlMult*atrD1;
                      tp = currentBid - atrTpMult*atrD1;
                     }
-                  place_trade(ORDER_TYPE_SELL, sl, tp);
+                  if(minStopPips <= 0.0 || (sl - currentBid) >= minStopPips*0.01)
+                     place_trade(ORDER_TYPE_SELL, sl, tp);
                  }
                else
                  {
@@ -815,6 +820,59 @@ double OnTester()
       for(int k=0; k<nYears; k++)
          FileWrite(fh, yearNum[k], yearNet[k]);
       FileClose(fh);
+     }
+
+//--- RICH per-trade dump (entry paired with exit) for loss-mode analysis
+   HistorySelect(0, TimeCurrent());
+   int td = HistoryDealsTotal();
+   long     inPos[];
+   datetime inTime[];
+   double   inPrice[], inSL[], inTP[];
+   int      inType[];
+   for(int i=0; i<td; i++)
+     {
+      ulong tk = HistoryDealGetTicket(i);
+      if(tk==0 || HistoryDealGetInteger(tk,DEAL_ENTRY)!=DEAL_ENTRY_IN)
+         continue;
+      int n = ArraySize(inPos);
+      ArrayResize(inPos,n+1); ArrayResize(inTime,n+1); ArrayResize(inPrice,n+1);
+      ArrayResize(inSL,n+1); ArrayResize(inTP,n+1); ArrayResize(inType,n+1);
+      inPos[n]   = HistoryDealGetInteger(tk,DEAL_POSITION_ID);
+      inTime[n]  = (datetime)HistoryDealGetInteger(tk,DEAL_TIME);
+      inPrice[n] = HistoryDealGetDouble(tk,DEAL_PRICE);
+      inType[n]  = (int)HistoryDealGetInteger(tk,DEAL_TYPE); // 0 buy(long) 1 sell(short)
+      ulong ord  = HistoryDealGetInteger(tk,DEAL_ORDER);
+      inSL[n]    = HistoryOrderGetDouble(ord,ORDER_SL);
+      inTP[n]    = HistoryOrderGetDouble(ord,ORDER_TP);
+     }
+   int fx = FileOpen("catba_tradesx.csv", FILE_WRITE|FILE_CSV|FILE_ANSI|FILE_COMMON, ',');
+   if(fx!=INVALID_HANDLE)
+     {
+      FileWrite(fx,"entry_time","exit_time","side","entry","exit","sl","tp","profit","reason","hold_min");
+      for(int i=0; i<td; i++)
+        {
+         ulong tk = HistoryDealGetTicket(i);
+         if(tk==0 || HistoryDealGetInteger(tk,DEAL_ENTRY)!=DEAL_ENTRY_OUT)
+            continue;
+         long pid = HistoryDealGetInteger(tk,DEAL_POSITION_ID);
+         int mi=-1;
+         for(int k=ArraySize(inPos)-1; k>=0; k--)
+            if(inPos[k]==pid) { mi=k; break; }
+         if(mi<0) continue;
+         datetime xt = (datetime)HistoryDealGetInteger(tk,DEAL_TIME);
+         double   xp = HistoryDealGetDouble(tk,DEAL_PRICE);
+         double   pf = HistoryDealGetDouble(tk,DEAL_PROFIT)
+                       + HistoryDealGetDouble(tk,DEAL_SWAP)
+                       + HistoryDealGetDouble(tk,DEAL_COMMISSION);
+         FileWrite(fx,
+                   TimeToString(inTime[mi],TIME_DATE|TIME_MINUTES),
+                   TimeToString(xt,TIME_DATE|TIME_MINUTES),
+                   (inType[mi]==0 ? "buy" : "sell"),
+                   inPrice[mi], xp, inSL[mi], inTP[mi], pf,
+                   (int)HistoryDealGetInteger(tk,DEAL_REASON),   // 4=SL 5=TP
+                   (int)((xt-inTime[mi])/60));
+        }
+      FileClose(fx);
      }
    return score;
   }

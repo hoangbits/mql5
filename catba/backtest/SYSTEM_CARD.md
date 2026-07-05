@@ -81,3 +81,17 @@ character, so it may be more exposed to regime shifts than a universal edge.
 forward-tested. -> Forward-demo BOTH ema8 and ema13 to confirm before trusting.
 Also fixed a dead input this session: place_trade now respects
 useRiskPercentPerTrade (was checking only riskPercentPerTrade>0).
+
+## UPDATE 2026-07-05b: + min-stop filter (minStopPips=30)
+Loss-mode analysis found tight-SL setups (entry near pivot, <=40 pips) win only
+38% and lose money. Added minStopPips filter (skip them). Walk-forward: improves
+OOS (23%->27%) across a robust plateau (ms20-50); did NOT pick the IS-optimum
+(60) which over-filters/degrades OOS.
+NEW DEFAULT: emaPeriod=13, minStopPips=30, sizing 0.5% equity-prop, ATR-BE 0.3.
+  Decade @0.5%: +56.5% (~4.4%/yr CAGR), PF 1.155, DD 10.9%.
+  Signal (fixed-lot): ann Sharpe 0.87 (was 0.45 at project start), Sortino 1.71,
+  OOS Sharpe 0.93 (higher than IS -> NO decay), skew +0.51, PSR 99.8%.
+Journey: ema8 Sharpe0.45/OOS0.18 -> ema13 0.72/0.80 -> +ms30 0.87/0.93. Two
+disciplined improvements (emaPeriod, min-stop filter) ~doubled the Sharpe with
+OOS holding up. STILL: GBPJPY-only validation, DSR~0 at full haircut, unproven
+forward -> forward-demo remains the gate.

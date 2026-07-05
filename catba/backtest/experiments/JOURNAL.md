@@ -438,3 +438,19 @@ evidence yet the edge is real ON GBPJPY. CAVEATS kept: GBPJPY-specific,
 DSR~0 at 120-trial haircut, unproven forward -> demo A/B ema8 vs ema13.
 BUG FIX: place_trade now checks useRiskPercentPerTrade (was dead — checked
 only riskPercentPerTrade>0; caused grid to run risk-% when set 'false').
+
+## 2026-07-05 — LOSS-MODE ANALYSIS -> minStopPips filter — REAL IMPROVEMENT (trial ~126)
+Enriched OnTester to dump paired entry/exit + SL/TP/reason/side/hold.
+loss_analysis.py on ema13 trades: STRONGEST pattern = SL distance. Tight-SL
+setups (<=40 pips, entry near pivot) win only 37.8% and lose -121k; wide-SL
+(>87) win 72%/+841k. Monotonic. (Hold-time pattern = same thing, not entry-
+knowable. Side/DoW weak/noise.) Added minStopPips filter (skip entries whose
+pivot SL < X pips). WALK-FORWARD sweep (default13, IS16-22/OOS23-26):
+  ms0 IS25.4/OOS23.0/PF1.119 | ms20 27.7/26.2/1.134 | ms30 34.3/27.4/1.155 |
+  ms40 34.9/23.1 | ms50 34.5/24.9/1.178 | ms60 35.1/OOS18.3 (over-filter/overfit).
+ROBUST PLATEAU ms20-50 all improve OOS; IS-optimum(60) DEGRADES OOS -> did NOT
+pick it. ADOPTED minStopPips=30 (mid-plateau). New default (ema13+ms30):
++56.5% @0.5%, Sharpe 0.87 (was 0.45), OOS Sharpe 0.93 (NO decay), Sortino
+1.71, skew +0.51, PSR 99.8%. 2nd genuine improvement from disciplined analysis.
+CAVEATS: DSR~0 at 126-trial haircut; GBPJPY-validated only; unproven forward.
+Journey: ema8 Sharpe0.45/OOS0.18 -> ema13 0.72/0.80 -> +ms30 0.87/0.93.
