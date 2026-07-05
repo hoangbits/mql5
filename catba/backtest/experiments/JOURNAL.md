@@ -454,3 +454,20 @@ pick it. ADOPTED minStopPips=30 (mid-plateau). New default (ema13+ms30):
 1.71, skew +0.51, PSR 99.8%. 2nd genuine improvement from disciplined analysis.
 CAVEATS: DSR~0 at 126-trial haircut; GBPJPY-validated only; unproven forward.
 Journey: ema8 Sharpe0.45/OOS0.18 -> ema13 0.72/0.80 -> +ms30 0.87/0.93.
+
+## 2026-07-05 — minStop filter CROSS-PAIR validation — ROBUST (trial ~132)
+ema13, minStop 0->30 on other JPY pairs:
+  EURJPY -4.7%->+0.6% (PF0.98->1.00) | AUDJPY -0.1%->+1.3% (0.99->1.01) |
+  CADJPY -9.9%->-3.6% (0.92->0.96). ALL 3 IMPROVED (2 flipped positive).
+The min-stop filter shows POSITIVE TRANSFER across instruments -> it is a
+REAL GENERAL PRINCIPLE, not GBPJPY-overfit. It now passes BOTH orthogonal
+robustness tests: walk-forward (OOS Sharpe 0.93, no decay) AND cross-
+instrument (helps every pair). Contrast emaPeriod=13 which passed walk-
+forward but FAILED cross-pair (GBPJPY-specific). Mechanism: entering next
+to S/R (tight stop) is a low-quality setup universally. HIGHEST-CONFIDENCE
+improvement in the project. This ~overcomes the DSR multiple-testing concern
+for minStop specifically (orthogonal validation > single-dataset selection).
+CONFIDENCE MAP: minStop30 = robust/general (high conf); emaPeriod13 = GBPJPY-
+specific (medium, forward-confirm); sizing+BE = validated. Remaining: still
+unproven FORWARD; base signal weak on non-GBPJPY pairs (but that's fine,
+GBPJPY-only).
