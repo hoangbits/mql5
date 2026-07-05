@@ -351,3 +351,11 @@ DD 12.1%, 8/11 green, worst -9.4%. POSITIVE (not inverted) -> the
 continuation edge is REAL, not pure GBPJPY-overfit — but much weaker/
 lower-quality than GBPJPY (+23%/PF1.07). Partial corroboration. AUDJPY,
 CADJPY pending.
+
+## 2026-07-05 [LOOP] — Generalization: AUDJPY (trial ~80)
+Exact reference params. AUDJPY decade: -4.6% net, PF 0.966, DD 13.7%,
+5/11 green, worst -4.1%. NEGATIVE. Edge does NOT hold on AUDJPY.
+Running tally: GBPJPY +23%/PF1.07, EURJPY +3.4%/PF1.02, AUDJPY -4.6%/PF0.97.
+MIXED -> edge is NOT a universal JPY-continuation phenomenon; it's
+partly pair-specific. Yellow/red flag for GBPJPY-specific overfit. CADJPY
+pending to finalize.
