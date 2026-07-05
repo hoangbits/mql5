@@ -359,3 +359,44 @@ Running tally: GBPJPY +23%/PF1.07, EURJPY +3.4%/PF1.02, AUDJPY -4.6%/PF0.97.
 MIXED -> edge is NOT a universal JPY-continuation phenomenon; it's
 partly pair-specific. Yellow/red flag for GBPJPY-specific overfit. CADJPY
 pending to finalize.
+
+## 2026-07-05 [LOOP] — Generalization CADJPY + FINAL VERDICT (trial ~81)
+CADJPY decade (exact reference params): -7.4% net, PF 0.941, DD 14.5%,
+4/11 green, worst -6.3%. NEGATIVE.
+
+FINAL GENERALIZATION TALLY (same params, no re-tuning):
+  GBPJPY +23% PF1.07 | EURJPY +3.4% PF1.02 | AUDJPY -4.6% PF0.97 |
+  CADJPY -7.4% PF0.94.  2/4 positive; non-home pairs average ~-3%.
+
+VERDICT: the edge is NOT a robust cross-pair continuation phenomenon — it
+is largely GBPJPY-SPECIFIC (strong there, weak on EURJPY, negative on
+AUDJPY/CADJPY). GBPJPY's +23% leans on two big trending years (2022, 2024)
+not replicated elsewhere. Two readings, can't fully separate: (a) overfit
+to GBPJPY's particular history, or (b) GBPJPY genuinely trends harder ("the
+dragon"). EITHER WAY the edge is fragile/concentrated and confidence in the
++23% is DOWNGRADED. This is a low-confidence, marginal, pair-specific edge.
+
+DECISION — SKIP Phase 2 (H7 Po3, H10 day-of-week): further parameter/signal
+search on a marginal, non-robust edge is overfitting risk with low EV. The
+search is effectively complete. ~81 trials; the honest deliverable is the
+CHARACTERIZATION, not a winning system.
+
+## 2026-07-05 [LOOP] — FINAL PROJECT SUMMARY
+What was achieved this project:
+ 1. Fixed a critical lot-size bug (was ~16x too small -> orders rejected).
+ 2. Diagnosed the real killer: inverse-SL risk-% sizing (-76%/85%DD decade).
+    Replaced with equity-proportional SL-independent sizing -> +23%/11%DD.
+ 3. Added ATR-scaled break-even (H9, the one walk-forward-validated tweak).
+ 4. Hardened code (filling mode, dead code, BE-cadence input, verboseLog).
+ 5. Built a full research framework (funnel, false-negative defenses,
+    literature criteria DSR/PBO/BHY) + repo-resident QUEUE/JOURNAL.
+ 6. Killed SMT decisively (reversal fails all TFs; continuation-confirm was
+    a look-ahead leak). Killed ~a dozen other hypotheses with lessons.
+ 7. Honest stats: ann Sharpe 0.45 (OOS 0.18), DSR~0 after 81 trials.
+ 8. Generalization: edge largely GBPJPY-specific, not robust cross-pair.
+HONEST BOTTOM LINE: turned a broken (-76%) EA into a marginally-positive
+(+23%/decade), low-confidence, GBPJPY-specific system. The value delivered
+is risk management + an honest characterization, NOT a proven money-maker.
+Whether to trade it live is a judgment call on a thin, fragile edge; if
+traded, tiny size (0.5%), and only after forward-demo. The process worked:
+it prevented shipping false confidence.

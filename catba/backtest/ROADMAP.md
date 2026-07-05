@@ -28,7 +28,7 @@ Legend: [x] done · [ ] todo · [~] in progress · (GATE) decision point.
 - [x] 1.5 (GATE-SMT-B) Robust plateau + OOS survival + economic rationale?
       If not all three -> kill. If yes -> candidate signal.
 
-## Phase 2 — Close the research queue  [ ]
+## Phase 2 — Close the research queue  [SKIPPED — edge non-robust, further search = overfit risk]
 - [ ] 2.1 H7 Po3/Judas as an *entry-location* refinement (not bias).
 - [ ] 2.2 Coverage review vs taxonomy grid; test only under-covered,
       high-prior cells. Stop-condition: N consecutive kills, no new leads.
@@ -64,8 +64,8 @@ Legend: [x] done · [ ] todo · [~] in progress · (GATE) decision point.
 
 ## Phase 6 — Ongoing / optional  [ ]
 - [ ] 6.1 Quarterly re-validation; append new data to the walk-forward.
-- [ ] 6.2 Generalization test: does the continuation+sizing edge hold on
-      other JPY pairs (EURJPY, AUDJPY)? (portfolio diversification)
+- [x] 6.2 Generalization test DONE (2026-07-05): edge is largely
+      GBPJPY-SPECIFIC — EURJPY weak+, AUDJPY/CADJPY negative. Not robust.
 - [ ] 6.3 Regime research round 2 only if a NEW structural detector idea
       appears (2019 vs 2025 are different failure modes; no single gate
       caught both — open problem).
@@ -83,3 +83,29 @@ GATE-SCALE (earn size-up with live proof).
 - The edge is THIN (PF ~1.06). Risk management is the product, not the signal.
 - More parameters = more overfit surface. Fewer knobs > clever knobs.
 - The tester is truth; Python screens only rank candidates for it.
+
+---
+
+## FINAL HANDOFF (2026-07-05) — autonomous work complete
+All automatable research + hardening is DONE. Repo is at v1.0. Honest state:
+a marginal, GBPJPY-specific, low-confidence edge (+23% decade backtest, but
+Sharpe 0.45 / OOS 0.18 / DSR~0 / fails generalization). See SYSTEM_CARD.md.
+
+Phase 2 signal-search intentionally SKIPPED (overfitting risk on a non-robust
+marginal edge). Research effectively complete (~81 trials).
+
+### What ONLY YOU can do next (cannot be automated):
+1. **Decide if it's worth trading at all.** The edge is thin and fragile.
+   Legit to shelve it — the deliverable was the process + honest verdict.
+2. **If proceeding: open a Darwinex DEMO account.**
+3. **Run the reference config on a GBPJPY H1 chart** per FORWARD_DEMO.md,
+   continuously, for >= 4 weeks (VPS ideal). Log fills/SL/TP/BE.
+4. **GATE-DEMO:** pass only if mechanics are clean + slippage/spread in line
+   with backtest. The demo tests EXECUTION, not the edge (too few trades).
+5. **If live:** 0.5% risk MAX given the weak+fragile edge. Never 1%+ without
+   a live quarter of proof. Expect losing years.
+
+### Do NOT:
+- Increase risk to chase returns (amplifies a fragile edge -> ruin risk).
+- Add more parameters/signals (overfitting; search is done).
+- Trust the +23% as an expectation (it's an optimistic, pair-specific upper bound).

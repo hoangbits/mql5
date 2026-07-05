@@ -56,3 +56,12 @@ print money. Position it as a low-risk, low-return, diversifiable sleeve.
 ## Known open problem
 Regime years (2019/2025 = different failure modes) drag results; no
 structural detector survived testing. Unsolved.
+
+## Generalization test (2026-07-05) — added post-hoc
+Applied the EXACT reference params (no re-tuning) to other 3-digit JPY pairs:
+  GBPJPY +23% PF1.07 | EURJPY +3.4% PF1.02 | AUDJPY -4.6% PF0.97 | CADJPY -7.4% PF0.94
+2/4 positive; non-home pairs average ~-3%. The edge is **largely
+GBPJPY-specific, NOT a robust cross-pair continuation edge**, and GBPJPY's
+result leans on 2 lucky trending years (2022/2024). This DOWNGRADES
+confidence further: treat +23% as an optimistic upper bound, not an
+expectation. Forward-demo is essential; if traded, 0.5% only.
