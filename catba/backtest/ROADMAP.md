@@ -44,7 +44,7 @@ Legend: [x] done · [ ] todo · [~] in progress · (GATE) decision point.
       ballooned to 13 GB. Keep OnTester CSV output.
 - [ ] 3.3 Final clean walk-forward of the reference config; compute PBO/DSR;
       write a one-page "system card" (edge, expectancy, DD, assumptions).
-- [ ] 3.4 (GATE-SHIP) Config + code frozen, tagged in git (e.g. v1.0).
+- [x] 3.4 (GATE-SHIP) Config + code frozen, tagged in git (e.g. v1.0).
 
 ## Phase 4 — Forward-demo (S5)  [ ]  — the first REAL test
 - [ ] 4.1 Open Darwinex demo near intended live size; attach reference config;
