@@ -36,11 +36,11 @@ Legend: [x] done · [ ] todo · [~] in progress · (GATE) decision point.
       and freeze the signal set. Record final trial count + DSR on winner.
 
 ## Phase 3 — Harden the validated system  [ ]
-- [ ] 3.1 Code-correctness pass on CatBa.mq5. Known latent issues to review:
+- [x] 3.1 Code-correctness pass on CatBa.mq5. Known latent issues to review:
       SL-check timer reuses checkEveryMinutes (line ~91); ORDER_FILLING_IOC
       not validated vs symbol filling mode; dead price_level block in
       update_sl_to_be; OnTrade empty. Fix real bugs, retest reference config.
-- [ ] 3.2 Reduce Print() verbosity (guarded by a verbose flag) — the logs
+- [x] 3.2 Reduce Print() verbosity (guarded by a verbose flag) — the logs
       ballooned to 13 GB. Keep OnTester CSV output.
 - [ ] 3.3 Final clean walk-forward of the reference config; compute PBO/DSR;
       write a one-page "system card" (edge, expectancy, DD, assumptions).
