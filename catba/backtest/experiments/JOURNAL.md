@@ -181,3 +181,16 @@ ATR-scaled BE (H9) = a viable system. Regime years now a drag, not a
 bomb. Provenance: H12 (mechanism-proven) + H9 (S4/OOS-validated); not
 holdout-mined. Return figure is at 0.10 lots (tiny leverage); PF/DD are
 the scale-free facts.
+
+## 2026-07-05 — H3i intraday sweep-fade KILLED@H1 (trial count: ~60)
+H1 mini-backtest, 2016-11..2026, 4 variants (target mid/2R x all-hours/
+session9-17). Best (mid, session): +20R GROSS but -4274 net pips after
+3-pip cost; all others net -7k to -13k pips; 8-9 neg years each. 2025 —
+the year D1-proxy said sweep-fade rescues — is the WORST session-variant
+year (-29R): raids in 2025 kept EXTENDING, so fading them = repeated
+stop-outs beyond the raid extreme. VERDICT: KILL CONFIRMED at higher
+fidelity (was KILLED@proxy). The intermediate H1 rung correctly vetoed
+building the MQL5 sweep-fade mode.
+META-LESSON: D1 close-to-close proxy SYSTEMATICALLY over-rates reversal/
+fade signals (ignores intraday stop-outs). Rule added: reversal-type
+hypotheses require >=H1 fidelity to screen; continuation-type OK at D1.
