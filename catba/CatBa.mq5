@@ -62,6 +62,9 @@ input double   add_pip_to_sl=0.2;
 //--- previously a latent bug (used the 12-min entry cadence); making it
 //--- explicit. Slower checks outperform 1-min (don't lock BE too eagerly).
 input int      checkSlEveryMinutes=12;
+//--- gate diagnostic logging; keep false in tester/live to avoid GB-scale
+//--- Experts logs (this EA prints per-check). Turn on only for debugging.
+input bool     verboseLog=false;
 
 double distance_to_trigger_be = DistanceToTriggerBE;
 int EXPERT_MAGIC = 042024;
@@ -89,7 +92,7 @@ int OnInit()
   {
 //---
 //--- todo copy it to ontick later
-   Print("-------------------on init start-------------------");
+   if(verboseLog) Print("-------------------on init start-------------------");
    g_initial_equity = AccountInfoDouble(ACCOUNT_EQUITY);
 // TimeCurrent() (which returns the current time in seconds since 1970)
    previousRange = TimeCurrent() / (60 * checkEveryMinutes);
@@ -180,7 +183,7 @@ void handle_new_tick()
      }
    string todayBias = get_daily_bias();
 //string todayBias = get_previous_week_bias();
-   Print("main::todayBias: ", todayBias);
+   if(verboseLog) Print("main::todayBias: ", todayBias);
 // can place max 2 trade per day
    if(!isAlreadyPlaceATradeToday() && todayBias != "NOBIAS")
      {
@@ -188,13 +191,13 @@ void handle_new_tick()
       double currentBid = SymbolInfoDouble(tradingSymbol, SYMBOL_BID);
       //--- Get the current Ask price
       double currentAsk = SymbolInfoDouble(tradingSymbol, SYMBOL_ASK);
-      Print("handle_new_tick::Current Bid: ", currentBid);
-      Print("handle_new_tick::Current Ask: ", currentAsk);
+      if(verboseLog) Print("handle_new_tick::Current Bid: ", currentBid);
+      if(verboseLog) Print("handle_new_tick::Current Ask: ", currentAsk);
 
       if(CopyBuffer(emaHandle,0,0,2,MA_Buffer)!=2)
          return;
       //--- MA_Buffer[0] is current candle EMA
-      Print("handle_new_tick::MA_Buffer[0]: ", MA_Buffer[0]);
+      if(verboseLog) Print("handle_new_tick::MA_Buffer[0]: ", MA_Buffer[0]);
       //Print("Media_Movil[0] = ", MA_Buffer[0] ,"\n","Media_Movil[1] = ",DoubleToString(MA_Buffer[1],6));
 
       //--- START handle povot point
@@ -208,8 +211,8 @@ void handle_new_tick()
       //Print("handle_new_tick:: xHigh: ", xHigh);
       //Print("handle_new_tick::xLow: ", xLow);
       //Print("handle_new_tick::xClose: ", xClose);
-      Print("vhandle_new_tick:: R1: ", vR1);
-      Print("handle_new_tick:: vS1: ", vS1);
+      if(verboseLog) Print("vhandle_new_tick:: R1: ", vR1);
+      if(verboseLog) Print("handle_new_tick:: vS1: ", vS1);
       //--- END handle povot point
 
       //--- H8b: ATR(14,D1) of the last completed day for scaled exits
@@ -247,14 +250,14 @@ void handle_new_tick()
               }
             else
               {
-               Print("handle_new_tick:: looking for BUY but currentASL is not < EMA9 hourly ");
+               if(verboseLog) Print("handle_new_tick:: looking for BUY but currentASL is not < EMA9 hourly ");
               }
 
            }
          else
            {
             // TODO: might not need handle this
-            Print("not handle buy both side yet");
+            if(verboseLog) Print("not handle buy both side yet");
            }
         }
       else
@@ -265,7 +268,7 @@ void handle_new_tick()
                //--- check if H1 candle closed above EMA9
                if(currentBid > (MA_Buffer[0] + addPipsToEMA))
                  {
-                  Print("handle_new_tick::START SELL as currentBid > ema9_hourly: ", currentAsk > MA_Buffer[0]);
+                  if(verboseLog) Print("handle_new_tick::START SELL as currentBid > ema9_hourly: ", currentAsk > MA_Buffer[0]);
                   double sl = vR1;
                   double tp = vS1;
                   double potential_profit = currentBid - vS1;
@@ -283,12 +286,12 @@ void handle_new_tick()
                  }
                else
                  {
-                  Print("handle_new_tick:: looking for sell but currentbid is not > EMA9 hourly ");
+                  if(verboseLog) Print("handle_new_tick:: looking for sell but currentbid is not > EMA9 hourly ");
                  }
               }
             else
               {
-               Print("not handle SELL both side yet");
+               if(verboseLog) Print("not handle SELL both side yet");
                // TODO:
               }
 
@@ -297,7 +300,7 @@ void handle_new_tick()
      }
    else
      {
-      Print("Done for the day, Trade already placed!");
+      if(verboseLog) Print("Done for the day, Trade already placed!");
      }
   }
 
@@ -344,7 +347,7 @@ string get_daily_bias()
 //Print("get_daily_bias::previous_day_range_pips: ", previous_day_range_pips);
 //Print("get_daily_bias::minPipsRequiredFromYesterday: ", minPipsRequiredFromYesterday);
 
-   Print("get_daily_bias:: prev_day ", prev_day, " bias value: ", bias);
+   if(verboseLog) Print("get_daily_bias:: prev_day ", prev_day, " bias value: ", bias);
    return bias;
   }
 
@@ -387,7 +390,7 @@ string get_previous_week_bias()
 //Print("get_previous_week_bias::previous_week_range_pips: ", previous_week_range_pips);
 //Print("get_previous_week_bias::minPipsRequiredFromLastWeek: ", minPipsRequiredFromLastWeek);
 
-   Print("get_previous_week_bias:: prev_week ", prev_week, " bias value: ", bias);
+   if(verboseLog) Print("get_previous_week_bias:: prev_week ", prev_week, " bias value: ", bias);
    return bias;
   }
 
@@ -411,7 +414,7 @@ int total_trade_placed_today()
            }
         }
      }
-   Print("total_trade_placed_today:: today_start_time:", today_start_time," total_trade_placed_today: ", total_trade_placed_today);
+   if(verboseLog) Print("total_trade_placed_today:: today_start_time:", today_start_time," total_trade_placed_today: ", total_trade_placed_today);
    return total_trade_placed_today;
   }
 
@@ -439,8 +442,8 @@ bool isAlreadyPlaceATradeToday()
         }
      }
 
-   Print("isAlreadyPlaceATradeToday::today_start_time value:", today_start_time);
-   Print("isAlreadyPlaceATradeToday::is placed trade Today: ", tradePlacedToday);
+   if(verboseLog) Print("isAlreadyPlaceATradeToday::today_start_time value:", today_start_time);
+   if(verboseLog) Print("isAlreadyPlaceATradeToday::is placed trade Today: ", tradePlacedToday);
    return tradePlacedToday;
   }
 
@@ -456,7 +459,7 @@ double CalculateLotSize(string symbol, double entry_price, double new_stop_loss,
 
    if(slDistance <= 0.0 || tickSize <= 0.0 || tickValue <= 0.0)
      {
-      Print("CalculateLotSize:: invalid inputs slDistance=", slDistance,
+      if(verboseLog) Print("CalculateLotSize:: invalid inputs slDistance=", slDistance,
             " tickSize=", tickSize, " tickValue=", tickValue);
       return 0.0;
      }
@@ -486,7 +489,7 @@ double CalculateLotSize(string symbol, double entry_price, double new_stop_loss,
       lots = MathFloor(lots / volStep + 0.0000001) * volStep;
    if(lots < volMin)
      {
-      Print("CalculateLotSize:: risk-based lot below min (", volMin,
+      if(verboseLog) Print("CalculateLotSize:: risk-based lot below min (", volMin,
             ") -> using min; actual risk will exceed the ", riskPerTrade*100, "% target");
       lots = volMin;
      }
@@ -494,7 +497,7 @@ double CalculateLotSize(string symbol, double entry_price, double new_stop_loss,
       lots = volMax;
    lots = NormalizeDouble(lots, 2);
 
-   Print("CalculateLotSize:: equity=", AccountInfoDouble(ACCOUNT_EQUITY),
+   if(verboseLog) Print("CalculateLotSize:: equity=", AccountInfoDouble(ACCOUNT_EQUITY),
          " risk=", riskPerTrade, " riskAmount=", riskAmount,
          " slDistance=", slDistance, " lossPerLot=", lossPerLot, " lots=", lots);
    return lots;
@@ -543,9 +546,9 @@ void place_trade(ENUM_ORDER_TYPE orderType,double new_stop_lossPrice,double take
      {
       //--- Calculate lot size for riskPercentPerTrade% risk
       trade_lot_size = CalculateLotSize(tradingSymbol, entry_price, new_stop_lossPrice, riskPercentPerTrade/100);
-      Print("Lot size for riskPercentPerTrade:", riskPercentPerTrade,"% risk: ", trade_lot_size);
+      if(verboseLog) Print("Lot size for riskPercentPerTrade:", riskPercentPerTrade,"% risk: ", trade_lot_size);
      }
-   Print("lotSize Placing: ", trade_lot_size);
+   if(verboseLog) Print("lotSize Placing: ", trade_lot_size);
 
 
 
@@ -556,9 +559,9 @@ void place_trade(ENUM_ORDER_TYPE orderType,double new_stop_lossPrice,double take
    request.type_filling = GetFillingMode(tradingSymbol);
    request.price = entry_price;
 
-   Print("place_trade::", orderType,"  at price:", request.price);
-   Print("place_trade::Stop Loss set at:", new_stop_lossPrice);
-   Print("place_trade::Take Profit set at:", takeProfitPrice);
+   if(verboseLog) Print("place_trade::", orderType,"  at price:", request.price);
+   if(verboseLog) Print("place_trade::Stop Loss set at:", new_stop_lossPrice);
+   if(verboseLog) Print("place_trade::Take Profit set at:", takeProfitPrice);
    request.deviation = 10;
    request.magic = EXPERT_MAGIC;
 
@@ -566,20 +569,20 @@ void place_trade(ENUM_ORDER_TYPE orderType,double new_stop_lossPrice,double take
    request.tp = takeProfitPrice;
 
 
-   Print(SymbolInfoInteger(Symbol(), SYMBOL_FILLING_MODE));
+   if(verboseLog) Print(SymbolInfoInteger(Symbol(), SYMBOL_FILLING_MODE));
 
 //--- send the request
    if(!OrderSend(request,result))
      {
-      PrintFormat("OrderSend error %d",GetLastError());     // if unable to send the request, output the error code
+      if(verboseLog) PrintFormat("OrderSend error %d",GetLastError());     // if unable to send the request, output the error code
      }
 
 //--- information about the operation
 //--- when DEBUG also check Journal tab(beside of expert tab.)
-   PrintFormat("retcode=%u  deal=%I64u  order=%I64u",result.retcode,result.deal,result.order);
-   Print("place_trade::result.comment: ",result.comment);
-   Print("place_trade::result.request_id: ",result.request_id);
-   Print("place_trade11::result.retcode_external", result.retcode_external);
+   if(verboseLog) PrintFormat("retcode=%u  deal=%I64u  order=%I64u",result.retcode,result.deal,result.order);
+   if(verboseLog) Print("place_trade::result.comment: ",result.comment);
+   if(verboseLog) Print("place_trade::result.request_id: ",result.request_id);
+   if(verboseLog) Print("place_trade11::result.retcode_external", result.retcode_external);
 
   }
 
@@ -616,12 +619,12 @@ void update_sl_to_be()
       double entry_price = PositionGetDouble(POSITION_PRICE_OPEN);  // open price of the position
       sl=PositionGetDouble(POSITION_SL);  // Stop Loss of the position
       tp=PositionGetDouble(POSITION_TP);  // Take Profit of the position
-      Print("OILDDDDDDDDDDDD SL ", sl);
+      if(verboseLog) Print("OILDDDDDDDDDDDD SL ", sl);
       double shouldRequestChange = false;
 
       ENUM_POSITION_TYPE type=(ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);  // type of the position
       //--- output information about the position
-      PrintFormat("#%I64u %s  %s  %.2f  %s  sl: %s  tp: %s  [%I64d]",
+      if(verboseLog) PrintFormat("#%I64u %s  %s  %.2f  %s  sl: %s  tp: %s  [%I64d]",
                   position_ticket,
                   position_symbol,
                   EnumToString(type),
@@ -659,9 +662,9 @@ void update_sl_to_be()
             //TakeProfit = new_stop_loss - (TPAwayFromEntry - DistanceToTriggerBE);
             //TakeProfit = new_stop_loss - TPAwayFromEntry;
             shouldRequestChange = true;
-            Print("SELL Side");
-            Print("Changed : new_stop_loss to new:::", new_stop_loss);
-            Print("Changed : TAke profit to new:::", tp);
+            if(verboseLog) Print("SELL Side");
+            if(verboseLog) Print("Changed : new_stop_loss to new:::", new_stop_loss);
+            if(verboseLog) Print("Changed : TAke profit to new:::", tp);
            }
 
          // END finding SL when SELL
@@ -676,9 +679,9 @@ void update_sl_to_be()
             //TakeProfit = new_stop_loss + (TPAwayFromEntry - DistanceToTriggerBE);
             //TakeProfit = new_stop_loss + TPAwayFromEntry;
             shouldRequestChange = true;
-            Print("BUY Side");
-            Print("Changed : new_stop_loss to new:::", new_stop_loss);
-            Print("Changed : TAke profit to new:::", tp);
+            if(verboseLog) Print("BUY Side");
+            if(verboseLog) Print("Changed : new_stop_loss to new:::", new_stop_loss);
+            if(verboseLog) Print("Changed : TAke profit to new:::", tp);
            }
          // END finding SL when BUY
          if(shouldRequestChange)
@@ -694,17 +697,17 @@ void update_sl_to_be()
             request.tp      =new_tp;
             request.magic=EXPERT_MAGIC;         // MagicNumber of the position
             //--- output information about the modification
-            PrintFormat("Modify #%I64d %s %s",position_ticket,position_symbol,EnumToString(type));
+            if(verboseLog) PrintFormat("Modify #%I64d %s %s",position_ticket,position_symbol,EnumToString(type));
             //--- send the request only if the stop actually moves
             if(shouldRequestChange && PositionGetDouble(POSITION_SL) != new_stop_loss)
               {
-               Print("request change SL ", new_stop_loss, " TP ", new_tp);
+               if(verboseLog) Print("request change SL ", new_stop_loss, " TP ", new_tp);
                if(!OrderSend(request,result))
-                  PrintFormat("update_sl_to_be OrderSend error %d",GetLastError());
+                  if(verboseLog) PrintFormat("update_sl_to_be OrderSend error %d",GetLastError());
 
 
                //--- information about the operation
-               PrintFormat("retcode=%u  deal=%I64u  order=%I64u",result.retcode,result.deal,result.order);
+               if(verboseLog) PrintFormat("retcode=%u  deal=%I64u  order=%I64u",result.retcode,result.deal,result.order);
               }
             //END update SL when not set
            }

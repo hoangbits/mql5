@@ -326,3 +326,10 @@ Fixed 3 latent bugs in CatBa.mq5 before forward-demo:
 VERIFICATION: reference config after fixes = +20.89% / PF 1.070 / DD 8.2% /
 worst -2.1% — BIT-IDENTICAL to pre-fix validated baseline. Correctness fixes
 changed zero behavior; the system is preserved and now live-safe/clean.
+
+## 2026-07-05 — Phase 3.2 log verbosity (trial ~78, no new backtest)
+Added input verboseLog=false; guarded all 44 active Print/PrintFormat calls
+with `if(verboseLog)`. Reference config bit-identical after (+20.89%/PF1.07/
+DD8.2%) — logging change, zero behavior change. Prevents the GB-scale
+Experts logs (were 13GB) during long tester sweeps + the forward-demo.
+Turn verboseLog=true only for debugging.
