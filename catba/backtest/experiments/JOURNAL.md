@@ -194,3 +194,18 @@ building the MQL5 sweep-fade mode.
 META-LESSON: D1 close-to-close proxy SYSTEMATICALLY over-rates reversal/
 fade signals (ignores intraday stop-outs). Rule added: reversal-type
 hypotheses require >=H1 fidelity to screen; continuation-type OK at D1.
+
+## 2026-07-05 — VALIDATED SIZING + defaults locked (trial ~66)
+New sizing mode useFixedRefStopSizing: risk% on a FIXED refStopPips (70)
+instead of the trade's actual SL -> equity-proportional, SL-independent,
+compounds a positive edge, scales to any account. Decade + BE0.3:
+  0.5%: +23.2% / DD 11.2 / PF 1.062 / worst -3.0  <- DEFAULT (safe growth)
+  1.0%: +45.8% / DD 22.1 / worst -8.5
+  2.0%: +81.9% / DD 41.0 / worst -27  (too hot)
+Risk% is pure risk calibration (edge identical) so no holdout concern.
+DEFAULTS CHANGED in CatBa.mq5: riskPercentPerTrade 0.2->0.5,
+beAtrMult 0.0->0.3, useFixedRefStopSizing default true, refStopPips 70.
+This is the cumulative validated system; answers user's risk-vs-fixed
+and grow-safely questions. CAVEAT: on the live ~$831 account even min
+lot (0.01) is ~5% risk on a 70-pip stop; sizing only becomes accurately
+0.5% once equity > ~$1700. Next gate: S5 forward-demo.

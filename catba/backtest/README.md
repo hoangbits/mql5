@@ -37,3 +37,13 @@ Headless Strategy Tester tooling for the CatBa EA (GBPJPY H1), Darwinex MT5.
 - With correct 2% sizing, 2025-06→2026-07: **−37.9%**, PF 0.76, maxDD 54% —
   the current parameters/logic have a negative edge at proper size; optimization
   and logic changes are required, not just tuning.
+
+## VALIDATED reference config (2026-07-05)
+Sizing: `useFixedRefStopSizing=true, riskPercentPerTrade=0.5, refStopPips=70`
+(equity-proportional, SL-independent — the SL-inverse risk-% was the −76%
+poison). Management: `beAtrMult=0.3` (ATR-scaled break-even, S4-validated).
+Decade 2016–2026H1: **+23.2%, PF 1.062, maxDD 11.2%, worst year −3.0%,
+7/11 green** — vs original stock 2%-risk EA −75.7% / 85% DD.
+These are now the EA input defaults. Scale risk to appetite:
+0.5%→11%DD, 1%→22%DD, 2%→41%DD. NOTE: below ~$1700 equity, min lot
+(0.01) forces risk above 0.5%. Next gate: S5 forward-demo before size-up.

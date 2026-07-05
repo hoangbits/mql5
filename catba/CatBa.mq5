@@ -14,7 +14,7 @@
 //--- input parameters
 
 input double   lotSize=0.0;
-input double   riskPercentPerTrade=0.2;
+input double   riskPercentPerTrade=0.5;
 input bool     useRiskPercentPerTrade=true;
 input int      emaPeriod=8;
 input int      checkEveryMinutes=12;
@@ -28,6 +28,12 @@ input double   minPipsRequiredFromYesterday=0.28;
 input double   maxPipsRequiredFromYesterday=999.0;
 //--- size risk from initial deposit instead of compounding equity (research H12b)
 input bool     riskOnInitialDeposit=false;
+//--- VALIDATED sizing: size on a FIXED reference stop (equity-proportional,
+//--- independent of the trade's SL) — avoids the inverse-SL-distance poison
+//--- that caused the -76% decade (research H12/H12b). Scales safely with any
+//--- account size. When true, riskPercentPerTrade is risked assuming refStopPips.
+input bool     useFixedRefStopSizing=true;
+input double   refStopPips=70.0;
 //--- cap SL so risk<=reward (legacy behavior); tight capped SLs are the
 //--- toxic trades identified in research H12b (research H8a)
 input bool     useRRCapOnSL=true;
@@ -43,7 +49,7 @@ input int      kz2StartHour=-1;
 input int      kz2EndHour=-1;
 //--- break-even management audit (research H9): off switch + ATR trigger
 input bool     useBreakEven=true;
-input double   beAtrMult=0.0;   // >0: BE trigger = mult*ATR(14,D1) instead of DistanceToTriggerBE
+input double   beAtrMult=0.3;   // >0: BE trigger = mult*ATR(14,D1) instead of DistanceToTriggerBE (validated H9)
 //--- structural regime gate: only trade when yesterday's D1 ADX(14) is
 //--- above threshold, i.e. enough directional structure (research H14)
 input bool     useAdxGate=false;
@@ -452,9 +458,17 @@ double CalculateLotSize(string symbol, double entry_price, double new_stop_loss,
       return 0.0;
      }
 
-//--- money lost on 1.0 lot if price travels slDistance into the stop.
+//--- distance used for SIZING. Default uses a FIXED reference stop so the
+//--- lot does NOT scale inversely with the trade's SL (the validated fix);
+//--- the ACTUAL slDistance is still used for the order's stop-loss.
+   double point       = SymbolInfoDouble(symbol, SYMBOL_POINT);
+   int    digits      = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
+   double pip         = ((digits == 3 || digits == 5) ? 10.0 : 1.0) * point;
+   double sizingDist  = useFixedRefStopSizing ? (refStopPips * pip) : slDistance;
+
+//--- money lost on 1.0 lot over the sizing distance.
 //--- tickValue is already in the deposit currency, so no manual FX conversion is needed.
-   double lossPerLot = (slDistance / tickSize) * tickValue;
+   double lossPerLot = (sizingDist / tickSize) * tickValue;
    double baseEquity = (riskOnInitialDeposit && g_initial_equity > 0.0)
                        ? g_initial_equity
                        : AccountInfoDouble(ACCOUNT_EQUITY);
