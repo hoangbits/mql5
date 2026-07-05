@@ -77,3 +77,11 @@ sizing calc only (floor = 0.5 x ATR14D1); (b) risk fixed JPY per trade
 (2% of initial deposit, no compounding); (c) fixed lot + annual reset.
 Prediction: (b) ~ fixed-lot result � isolates compounding vs
 inverse-SL-weighting contributions to the -76%-vs+22% gap.
+
+## H14 — Structural regime gate: ADX(D1) / ATR-slope  [QUEUED]
+Rule (fixed): compute ADX(14) on D1. Continuation bias trades only when
+ADX > thr, thr in {20, 25} (2 variants). Separately: ATR(14) slope gate —
+trade only when ATR14 today > ATR14 20 days ago (rising-vol regime;
+1 variant). Metric: same D1 continuation screen as H2 for comparability.
+Prediction: unlike trailing win-rate, ADX/ATR describe the market's
+STATE not our PnL; should shut off 2019/2025 without lagging whipsaw.

@@ -151,3 +151,11 @@ VERDICT: adopt beAtrMult=0.3 as reference config — validated risk
 improvement, NOT an edge improvement. Both configs' OOS PF ~1.02-1.03 =
 heavy-haircut zone; 2023-26 (incl. 2025 regime year) is thin regardless.
 Regime defense remains the profit frontier.
+
+## 2026-07-05 — H5 FVG bias KILLED + review pass (trial count: ~53)
+All 3 gap-size variants ~48-50% win, avg +1.3 to -2.4 pips, 5-6 neg
+years. KILLED@proxy(D1) with no lead-worthy structure. D1-proxy round is
+now fully exhausted. REVIEW PASS coverage check: regime-gate dimension
+still has UNTESTED structural candidates (ADX(D1), ATR-slope) — the
+exact class H2's kill pointed to. Registered H14. Entry-location
+dimension untested beyond current EMA pullback (H7 Po3, OTE pending).
