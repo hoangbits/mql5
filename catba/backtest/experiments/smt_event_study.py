@@ -105,7 +105,7 @@ def event_curve(sig_list, gj_close, ordered, idx):
 
 def main():
     print("SMT EVENT STUDY — forward cum return (pips) in bias direction\n")
-    for tf in ("M15", "H1"):
+    for tf in ("M5", "M15", "M30", "H1"):
         sig, gj_close, ordered, idx = signals(tf)
         print(f"================= TF = {tf} =================")
         for m, lst in sig.items():

@@ -256,3 +256,35 @@ with GBPJPY = continuation market. LEAD: inverted (continuation-confirmed-
 by-divergence) is a 5/6-cell plateau but that's momentum = the existing
 edge, not SMT. Pending: M5+M30 to honor the full TF request before final
 verdict.
+
+## 2026-07-05 [LOOP] — FINAL SMT VERDICT (all 4 TFs; trial ~72) — KILLED
+Full-decade event study, GBPJPY daily bias from inter-market divergence at
+the London open, 3 defs (A vs GBPUSD, B vs USDJPY, C residual on both legs)
+x 4 TFs (M5/M15/M30/H1). FADE the divergence -> forward cum return (pips):
+
+  Method A (vs GBPUSD): NEGATIVE every TF  (M5 -24..-53, M15 -14..-22,
+      M30 -9..-10, H1 -12..-17). Fade loses; continuation wins.
+  Method C (residual):  NEGATIVE hard every TF (-15..-78). Overextension
+      CONTINUES (momentum), the opposite of mean-reversion.
+  Method B (vs USDJPY): NEGATIVE on M5/M15; marginal +8..+12 pips at h~8 on
+      M30/H1 BUT win% ~50.4-50.8% (coin flip) and ~1 pip/day << ~3 pip cost.
+
+11/12 cells negative-or-noise; the 2 "positive" cells are below cost and
+~50% win. No robust plateau, no TF works.
+
+ANSWERS to the two questions:
+  (1) Which TF detects SMT best?  NONE produce a tradable reversal edge.
+      "Least bad" = H1 vs USDJPY, but below cost / coin-flip -> not real.
+  (2) How many days to hold the bias?  MOOT — there is no reversal bias to
+      hold. The FADE signal decays into LOSSES (continuation) at every
+      horizon, so holding a fade bias any length loses.
+
+CONCLUSION: SMT-as-reversal is FALSIFIED on GBPJPY across all tested TFs and
+definitions. Consistent with the pair being CONTINUATION-dominated and every
+prior ICT reversal concept failing/inverting here.
+LEAD (Phase 2, not chased now): the INVERSE reading is a robust plateau —
+divergence predicts CONTINUATION (A/C negative => inverse positive all TFs).
+That is momentum = the EXISTING CatBa edge, not SMT; could be tested later
+as an entry/bias refinement, but is out of scope for the SMT question.
+DATA asset: 12 full-decade CSVs (GBPJPY/GBPUSD/USDJPY x M5/M15/M30/H1) now
+producible on demand via ExportSMT.ex5 (tester auto-download).
