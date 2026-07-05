@@ -94,3 +94,14 @@ return day+1..+10 -> best TF (smoothest drift) + holding half-life.
 Plateau across {TF, session window, strictness, swing lookback} + per-year
 consistency required. Prediction: LOW prior (continuation market); expect
 fast decay so "hold till opposite SMT" likely too long. Falsify, don't confirm.
+
+## H16 — Divergence-confirmed continuation filter  [S1-RUNNING]
+Daily bias = sign(prior D1 body) [CatBa signal]. Divergence CONTINUATION
+direction at London open: method A (GBPJPY makes window extreme GBPUSD
+doesn't confirm -> relative strength that way) @ H1; method C (sign of
+residual of GBPJPY on GBPUSD+USDJPY window returns). Bucket days: CONFIRM
+(div dir == bias), CONTRADICT (opp), vs PLAIN (all bias days = baseline
+52.2%/+4.9). Metric: bias*(today D1 open->close) pips + win%, per year.
+Prediction: if divergence adds info, CONFIRM > PLAIN > CONTRADICT with a
+margin that survives cost + is consistent per-year. If CONFIRM ~ PLAIN ->
+redundant (relative strength == momentum), filter adds nothing.
