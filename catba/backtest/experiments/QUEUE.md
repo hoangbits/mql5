@@ -105,3 +105,12 @@ residual of GBPJPY on GBPUSD+USDJPY window returns). Bucket days: CONFIRM
 Prediction: if divergence adds info, CONFIRM > PLAIN > CONTRADICT with a
 margin that survives cost + is consistent per-year. If CONFIRM ~ PLAIN ->
 redundant (relative strength == momentum), filter adds nothing.
+
+## H17 — Core-param walk-forward optimization  [S4-RUNNING, opt-in]
+Grid: emaPeriod{5,8,13,21} x addPipsToEMA{0.05,0.11,0.20} x
+minPipsRequiredFromYesterday{0.14,0.28,0.42} = 36 combos, all else = reference
+config. Each run full decade -> per-year. IS=2016-22, OOS=2023-26.
+Pick IS winner by netPct; ONE OOS look; compute PBO/CSCV across years.
+Prediction (LOW): IS-optimum likely fails OOS (thin edge) -> confirms current
+default (8/0.11/0.28) is fine and we're at the ceiling. Keep only if IS
+winner ALSO beats default OOS AND PBO is low.
