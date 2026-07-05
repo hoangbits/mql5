@@ -307,3 +307,22 @@ muddy, and absent in recent years. Confirms "relative strength == momentum,
 redundant." SMT adds nothing tradable to CatBa.
 METHOD NOTE: the initial +29/+52 was a classic backtest leak; only forward-
 from-signal measurement is valid for a signal computed intraday.
+
+## 2026-07-05 — Phase 3.1 code-correctness fixes (trial ~78)
+Fixed 3 latent bugs in CatBa.mq5 before forward-demo:
+1. BE-check TIMER: OnTick used checkEveryMinutes(12) instead of the intended
+   1-min var -> BE actually ran every 12 min. Fixing to 1-min HURTS
+   (+12.8% vs +20.9%). Made cadence an explicit input checkSlEveryMinutes.
+   Sweep (all else = reference): 1:+12.8 | 6:+17.5 | 12:+20.9 | 18:+19.4 |
+   30:+23.0 (%). Fast BE worse; 12-30 min a flat PLATEAU (PF~1.07, DD~8%).
+   KEPT 12 (H9-validated, on plateau; 30's +2% is within noise = would be
+   cherry-picking max). LESSON: don't lock break-even too eagerly.
+2. FILLING MODE: hardcoded ORDER_FILLING_IOC -> GetFillingMode() picks a
+   broker-supported mode (IOC/FOK/RETURN). Live-safety; no backtest impact.
+3. DEAD CODE: removed the price_level/sl/tp block in update_sl_to_be
+   (stop_level=9999999999 garbage) + fixed the modify guard to compare
+   POSITION_SL vs new_stop_loss (was comparing vs garbage = always true).
+   Removed DESIRE/GGGGG debug spam (log bloat).
+VERIFICATION: reference config after fixes = +20.89% / PF 1.070 / DD 8.2% /
+worst -2.1% — BIT-IDENTICAL to pre-fix validated baseline. Correctness fixes
+changed zero behavior; the system is preserved and now live-safe/clean.

@@ -58,6 +58,10 @@ input double   minPipsRequiredFromLastWeek=0.0;
 input double   addPipsToEMA=0.11;
 input double   DistanceToTriggerBE=0.72;
 input double   add_pip_to_sl=0.2;
+//--- how often (minutes) to run break-even management. NOTE: this was
+//--- previously a latent bug (used the 12-min entry cadence); making it
+//--- explicit. Slower checks outperform 1-min (don't lock BE too eagerly).
+input int      checkSlEveryMinutes=12;
 
 double distance_to_trigger_be = DistanceToTriggerBE;
 int EXPERT_MAGIC = 042024;
@@ -65,7 +69,6 @@ double g_initial_equity = 0.0;   // captured in OnInit; base for riskOnInitialDe
 
 datetime previousRange = 0;
 datetime previous_check_sl_range = 0;
-int      check_sl_every_minutes = 1;
 //--- related to EMA
 int    emaHandle;
 double MA_Buffer[];
@@ -90,7 +93,7 @@ int OnInit()
    g_initial_equity = AccountInfoDouble(ACCOUNT_EQUITY);
 // TimeCurrent() (which returns the current time in seconds since 1970)
    previousRange = TimeCurrent() / (60 * checkEveryMinutes);
-   previous_check_sl_range = TimeCurrent() / (60 * check_sl_every_minutes);
+   previous_check_sl_range = TimeCurrent() / (60 * checkSlEveryMinutes);
 
    emaHandle = iMA(tradingSymbol,PERIOD_H1,emaPeriod,0,MODE_EMA,PRICE_CLOSE);
    ArraySetAsSeries(MA_Buffer,true);
@@ -130,11 +133,11 @@ void OnTick()
       previousRange = currenTFtRange;
      }
 
-   datetime current_check_sl_range = TimeCurrent() / (60 * checkEveryMinutes);
+   datetime current_check_sl_range = TimeCurrent() / (60 * checkSlEveryMinutes);
 
    if(current_check_sl_range != previous_check_sl_range)
      {
-      update_sl_to_be();;
+      update_sl_to_be();
       previous_check_sl_range = current_check_sl_range;
      }
 
@@ -501,6 +504,19 @@ double CalculateLotSize(string symbol, double entry_price, double new_stop_loss,
 
 
 //+------------------------------------------------------------------+
+//| Pick an order filling mode the symbol actually supports          |
+//+------------------------------------------------------------------+
+ENUM_ORDER_TYPE_FILLING GetFillingMode(string symbol)
+  {
+   int modes = (int)SymbolInfoInteger(symbol, SYMBOL_FILLING_MODE);
+   if((modes & SYMBOL_FILLING_IOC) != 0)
+      return ORDER_FILLING_IOC;
+   if((modes & SYMBOL_FILLING_FOK) != 0)
+      return ORDER_FILLING_FOK;
+   return ORDER_FILLING_RETURN;
+  }
+
+//+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 void place_trade(ENUM_ORDER_TYPE orderType,double new_stop_lossPrice,double takeProfitPrice)
@@ -537,7 +553,7 @@ void place_trade(ENUM_ORDER_TYPE orderType,double new_stop_lossPrice,double take
    request.symbol = tradingSymbol;
    request.volume = trade_lot_size;
    request.type = orderType;
-   request.type_filling = ORDER_FILLING_IOC;
+   request.type_filling = GetFillingMode(tradingSymbol);
    request.price = entry_price;
 
    Print("place_trade::", orderType,"  at price:", request.price);
@@ -667,49 +683,6 @@ void update_sl_to_be()
          // END finding SL when BUY
          if(shouldRequestChange)
            {
-            Print("DESIRE: latest_price.ask ", latest_price.ask);
-            Print("DESIRE: latest_price.bid ", latest_price.bid);
-            Print("DESIRE: postition_type ", postition_type);
-            Print("DESIRE: entry_price", entry_price);
-            Print("DESIRE: old sl is::", sl);
-            Print("DESIRE: new_stop_loss is::", new_stop_loss);
-            Print("DESIRE: new_tp is::", new_tp);
-            Print("shouldRequestChange,", shouldRequestChange);
-
-
-
-            double price=PositionGetDouble(POSITION_PRICE_OPEN);
-            double bid=SymbolInfoDouble(position_symbol,SYMBOL_BID);
-            double ask=SymbolInfoDouble(position_symbol,SYMBOL_ASK);
-            int    stop_level=(int)SymbolInfoInteger(position_symbol,SYMBOL_TRADE_STOPS_LEVEL);
-            Print("stop level", stop_level);
-            double price_level;
-            //--- if the minimum allowed offset distance in points from the current close price is not set
-            if(stop_level<=0)
-               stop_level=-999999; // set the offset distance of 150 points from the current close price
-            else
-               stop_level+=999999; // set the offset distance to (SYMBOL_TRADE_STOPS_LEVEL + 50) points for reliability
-            stop_level = 9999999999;
-            Print("new stop level", stop_level);
-            //--- calculation and rounding of the Stop Loss and Take Profit values
-            price_level=stop_level*SymbolInfoDouble(position_symbol,SYMBOL_POINT);
-            if(type==POSITION_TYPE_BUY)
-              {
-               sl=NormalizeDouble(bid-price_level,digits);
-               tp=NormalizeDouble(bid+price_level,digits);
-               //  sl = 1920;
-               //tp = 2020;
-              }
-            else
-              {
-               sl=NormalizeDouble(ask+price_level,digits);
-               tp=NormalizeDouble(ask-price_level,digits);
-               //     sl = 2010;
-               //tp = 1927;
-              }
-
-
-
             //--- zeroing the request and result values
             ZeroMemory(request);
             ZeroMemory(result);
@@ -722,20 +695,12 @@ void update_sl_to_be()
             request.magic=EXPERT_MAGIC;         // MagicNumber of the position
             //--- output information about the modification
             PrintFormat("Modify #%I64d %s %s",position_ticket,position_symbol,EnumToString(type));
-            //--- send the request
-            if(shouldRequestChange && PositionGetDouble(POSITION_SL) != sl)
+            //--- send the request only if the stop actually moves
+            if(shouldRequestChange && PositionGetDouble(POSITION_SL) != new_stop_loss)
               {
-               Print("requiest change SL", new_stop_loss);
-               Print("requiest change TP", new_tp);
+               Print("request change SL ", new_stop_loss, " TP ", new_tp);
                if(!OrderSend(request,result))
-                 {
-                  Print("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
-                  Print("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
-                  Print("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
-                  Print("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
-                  Print("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
-                  PrintFormat("OrderSend error %d",GetLastError());  // if unable to send the request, output the error code
-                 }
+                  PrintFormat("update_sl_to_be OrderSend error %d",GetLastError());
 
 
                //--- information about the operation
