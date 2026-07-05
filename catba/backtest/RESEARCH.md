@@ -98,3 +98,39 @@ The funnel above is biased to kill; these rules bound what a kill means.
    KILLED@proxy item at tester fidelity.
 6. **Multi-lens metrics.** Screens report win%, mean, median, and
    top-day concentration — fat-tailed edges die under win%/mean alone.
+
+## 6. Literature-verified criteria (deep-research 2026-07-04/05; votes 3-0 unless noted)
+
+Sources: Bailey & López de Prado, "The Deflated Sharpe Ratio" (SSRN
+2460551); Bailey, Borwein, López de Prado, Zhu, "The Probability of
+Backtest Overfitting" (SSRN 2326253); Harvey & Liu, "Backtesting"
+(SSRN 2345489).
+
+**Adopted as hard rules:**
+1. **N-trials is a mandatory field.** A result reported without its trial
+   count is uninterpretable (worthless, per B&LdP). Our JOURNAL already
+   carries a running trial count — every future entry must too.
+2. **The bar rises with N.** E[max SR] across N skill-less trials grows
+   with N and trial variance (closed-form EVT approximation exists). A
+   "best of 42 trials" must clear a far higher bar than a single test.
+3. **Holdout reuse is quantified poison.** ~20 uses at 95% confidence
+   makes a false positive EXPECTED. Our one-look-per-hypothesis rule is
+   literature-backed; decade-spanning runs silently consume holdout looks
+   — log them.
+4. **PBO as selection metric.** P(IS-optimal config underperforms the
+   MEDIAN config OOS). Sobering benchmark: an 8,800-combination search on
+   a PURE RANDOM WALK produced IS Sharpe 1.27 with PSR-stat 2.83 (>99%
+   "significant") while PBO was 55% — single-test significance can fully
+   pass on noise. When we run MT5 optimizer sweeps, compute PBO across
+   the pass matrix before believing the winner.
+5. **Nonlinear haircut (vote 2-1).** SR < 0.4 → discount >50% (usually to
+   insignificance); SR > 1.0 → ≤25%. Our PF≈1.07 results live in the
+   heavy-discount zone: treat as "promising, unproven," never ship-ready.
+6. **BHY/FDR over Bonferroni** for multiplicity correction in trading
+   research (Bonferroni's FWER control manufactures false negatives).
+
+**Plausible, verification quota-killed (treat as leads, not rules):**
+lenient-IS-then-OOS-intersection funnel for false negatives (Harvey &
+Liu); MinBTL < 2·ln(N)/E[maxSR]² minimum backtest length; CPCV > walk-
+forward at preventing false discoveries; White's Reality Check / Hansen
+SPA as formal best-of-universe tests.
