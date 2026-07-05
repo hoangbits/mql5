@@ -141,3 +141,13 @@ Darwinex terminal (4000030796 @ Darwinex-Live, save password), then run
 backtest/s4_oos_03.ini and s4_oos_fixed.ini.
 Also: tester caches ate ~13GB disk (11GB Tester + 2.6GB shared) — clean
 cache/logs subfolders when convenient.
+
+## 2026-07-05 — H9 S4 COMPLETE: PASS on registered score (trial count: ~50)
+OOS 2023-26 one look: 0.3xATR score -15.4 / DD 9.6 / worst -2.1 / net
++2.1 / PF 1.020 vs fixed control score -25.3 / DD 12.0 / worst -5.1 /
+net +3.7 / PF 1.031. Rank preserved on the registered score; the RISK
+SHAPE transfers (shallower DD + worst-year), profit does not improve.
+VERDICT: adopt beAtrMult=0.3 as reference config — validated risk
+improvement, NOT an edge improvement. Both configs' OOS PF ~1.02-1.03 =
+heavy-haircut zone; 2023-26 (incl. 2025 regime year) is thin regardless.
+Regime defense remains the profit frontier.
