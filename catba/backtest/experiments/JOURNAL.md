@@ -129,3 +129,15 @@ conservatively ("0.3-0.5xATR holds profit, DD <= current"); expect 8.2%
 DD to regress. CAVEAT: variant choice used full-decade results incl.
 nominal holdout -> S4 split check required before adopting as default
 (rank stability on 2016-22 vs 2023-26, one look). Status: S2-PASS(cond).
+
+## 2026-07-05 — H9 S4 status: IS done, OOS BLOCKED on login
+IS 2016-22 ranking by registered score: 0.3xATR wins (+5.77; 6/7 pos
+years, worst -0.67%, DD 8.3, PF 1.100) > 0.8 (+2.41) > 0.5 (-7.34) >
+fixed 0.72 (-14.97). OOS 2023-26 one-look PENDING: terminal lost saved
+credentials (misconfigured metatrader5 MCP placeholder-password login
+attempts overnight) -> headless tester hangs at "not synchronized".
+MCP entry disabled in .claude.json. UNBLOCK: manual login once in the
+Darwinex terminal (4000030796 @ Darwinex-Live, save password), then run
+backtest/s4_oos_03.ini and s4_oos_fixed.ini.
+Also: tester caches ate ~13GB disk (11GB Tester + 2.6GB shared) — clean
+cache/logs subfolders when convenient.
