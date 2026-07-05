@@ -471,3 +471,15 @@ CONFIDENCE MAP: minStop30 = robust/general (high conf); emaPeriod13 = GBPJPY-
 specific (medium, forward-confirm); sizing+BE = validated. Remaining: still
 unproven FORWARD; base signal weak on non-GBPJPY pairs (but that's fine,
 GBPJPY-only).
+
+## 2026-07-05 — 2-instrument portfolio (GBPJPY+AUDJPY) for durability — NO GAIN (trial ~134)
+Both ema13+minStop30, fixed lot. Monthly-return corr +0.14 (low, good setup).
+Weightings G/A: 100/0 Sharpe0.87/DD6.1/9green | 80/20 0.86/4.7/9 |
+70/30 0.84/4.1/10green | 50/50 0.77/4.0/10green. Adding AUDJPY LOWERS Sharpe
+(dilution) while improving DD + durability (10/11 green). Net for Darwinex
+(VaR-normalized -> Sharpe-driven): wash-to-negative. AUDJPY edge too weak
+(+1.3%/decade, near-breakeven) to provide real diversification benefit.
+CONCLUSION: 2-instrument does NOT help; diversification needs a second REAL
+edge (Sharpe>0 meaningfully), which we don't have. GBPJPY-alone (Sharpe 0.87)
+remains best. The durability weakness for Darwinex is unsolved without a
+genuinely different profitable signal/instrument. Keep GBPJPY-only single.
