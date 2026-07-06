@@ -496,3 +496,16 @@ confirm: no second real edge exists in this space. To make CatBa Darwinex-
 fundable needs a GENUINELY NEW profitable edge (different market/logic) = a
 separate research project, not a tweak. CatBa stands as a modest, thin,
 GBPJPY-specific single edge (Sharpe 0.87 backtest). Search exhausted.
+
+## 2026-07-05 — Consolidation/volatility analysis (user idea) — LEAD (trial ~137)
+Bucketed ema13 trades by consolidation proxies at entry (prior-day, no leak).
+FINDING: CatBa near-breakeven in QUIET markets (low-ATR: +16k/50.9% win),
+strong in EXPANSION (high-ATR: +458k/58.1%). BUT consolidation trades DON'T
+LOSE (near-breakeven, not negative) — unlike minStop's tight-SL losers.
+Refined: quiet trades add NOISE without return. Skipping low-ATR-33% trades:
+Sharpe 0.63->0.70, net -1.0% (return preserved, Sharpe up) = a real Sharpe
+lever (Darwinex-relevant). vs H14 ADX gate (killed) — ATR-percentile is
+cleaner than ADX. STATUS: promising LEAD, IN-SAMPLE only, ~137 trials.
+NEEDS walk-forward + cross-pair (like minStop) before adopting. User's
+'wait for breakout to ENTER' part NOT tested (likely hurts — late entry,
+killzone lesson H4). The value is SKIP-QUIET (Sharpe), not breakout-entry.
