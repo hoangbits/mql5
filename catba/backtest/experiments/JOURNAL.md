@@ -483,3 +483,16 @@ CONCLUSION: 2-instrument does NOT help; diversification needs a second REAL
 edge (Sharpe>0 meaningfully), which we don't have. GBPJPY-alone (Sharpe 0.87)
 remains best. The durability weakness for Darwinex is unsolved without a
 genuinely different profitable signal/instrument. Keep GBPJPY-only single.
+
+## 2026-07-05 — Mean-reversion TWIN (durability hedge) — FAILED (trial ~136)
+Sweep-reversal MR (H3 signal) vs CatBa, monthly. Correlation only +0.07 (NOT
+negative — H3 anti-corr is YEARLY, washes out monthly). MR standalone Sharpe
+-0.54 (loses). Combining drags Sharpe 0.87->0.70->0.58->0.42->0.23; durability
+NOT improved (9->8 green yr). KILLED. Same lesson as AUDJPY: diversification
+needs a second REAL edge (positive Sharpe + genuine neg/low corr); a losing,
+weakly-correlated strategy just dilutes. DURABILITY REMAINS UNSOLVED with
+available materials. Both diversification attempts (AUDJPY pair, MR twin)
+confirm: no second real edge exists in this space. To make CatBa Darwinex-
+fundable needs a GENUINELY NEW profitable edge (different market/logic) = a
+separate research project, not a tweak. CatBa stands as a modest, thin,
+GBPJPY-specific single edge (Sharpe 0.87 backtest). Search exhausted.
