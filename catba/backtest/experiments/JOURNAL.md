@@ -530,3 +530,20 @@ was in-sample metric luck; rigorous WF+sweep says NO.
 NEXT candidate (targets the REAL problem): volatility THROTTLE — cut size
 when realized vol hits an extreme percentile (directly addresses 2020).
 Entry-side regime filters are done.
+
+## 2026-07-06 — Volatility throttle — KILLED + closes the regime-conditioning thread
+vol_throttle.py: daily ATR percentile vs trailing 252d, step throttle
+(pct>80/90/95 x0.5/0.33/0) + vol-target. Pre-commit IS/OOS.
+MAKE-OR-BREAK (P&L by ATR-pct band): hypothesis INVERTED.
+  2020 loss lives in LOW vol: [0-50 -44496][90-100 +5760] -> crash leg was
+  profitable, pain was low-vol chop.  2024 is ALL tail: [90-100 +198681].
+  2022 too: [80-90 +173k][90-100 +109k].
+=> CatBa's EDGE IS the vol explosion. Throttling high vol cuts the edge not
+the losses: every variant net -170k..-669k, Sharpe 0.70->0.61 best, maxDD
+ROSE 6.7%->7-14%, 2020 no better (vol-target -66k, worse), 2024 gutted.
+CONCLUSION (both regime attempts now dead): CatBa wins/losses do NOT separate
+by any single regime variable — wins concentrate in the vol tail, losses are
+diffuse (low-vol chop + failed mid-trends). The lumpiness is the STRUCTURAL
+signature of a trend-following edge, not a filterable bug. Solo-tuning CatBa
+is DONE. Only real durability fix = a 2nd uncorrelated edge (per
+DARWINEX_TARGET.md), + start the forward track record now.
