@@ -579,3 +579,23 @@ edges eaten by spread or rollover artifacts. LUMPINESS CANNOT BE FIXED ON
 GBPJPY ALONE — a 2nd edge needs a DIFFERENT INSTRUMENT (per DARWINEX_TARGET).
 GBPJPY-only research has hit bedrock. Lessons: always net spread; distrust
 rollover-candle edges.
+
+## 2026-07-06 — "Improve CatBa": 4 levers tested (MT5 tester, fixed lot 0.10)
+See IMPROVE_4LEVERS.md. Baseline ema13/minStop30: net 42.7%, PF 1.16, DD 9.7%,
+9/11 green, score 21.7.
+#1 EXIT (let winners run / trailing): NO free win. Removing TP breaks system
+(LWR 3xATR: unguarded=stacking/DD44%, guarded=31 trades/multi-yr holds/DD31%).
+Found real EA bug: no concurrent-position guard (only same-day block) -> added
+CountOpenPositions() (active when useTrailing). CatBa is SHORT-HOLD (7h median,
+pivot targets), not a trend-follower — no intra-trade tail to capture. Trail+
+keepTP 1xATR = risk-reduction tradeoff: DD 9.7->6.8%, ret/DD 4.4->5.2, 2020
+-18.9k->-5.8k, but -17% return & 2026 worse. Shipped OFF by default.
+#2 RISK-SHAPING: compounding=wealth only (no D-score change); vol-target
+Sharpe .70->.74 but DD 6.7->9.9% worse. Marginal, no lever.
+#3 ROBUSTNESS: ema 12/13/14 = 39.5/42.7/38.0% net, PF~1.15, DD~9%, plateau
+(no cliff). ema13 modest local peak. Config generalizes -> safe to deploy.
+#4 COST/EXEC: no explicit Spread in INIs (tester uses current ~2p, not
+rollover-aware). hr0 rollover entries +140k are spread-fragile. Hygiene fix.
+EA changes: added useTrailing/trailAtrMult/letWinnersRun inputs (default OFF),
+CountOpenPositions() anti-stack guard, letWinnersRun drops hard TP. Production
+behavior UNCHANGED (all new features opt-in, off by default). Compiles 0 err.

@@ -62,6 +62,14 @@ input double   addPipsToEMA=0.11;
 input double   minStopPips=30.0;
 input double   DistanceToTriggerBE=0.72;
 input double   add_pip_to_sl=0.2;
+//--- #1 EXIT experiment: trail the SL by ATR(14,D1) to LET WINNERS RUN instead
+//--- of capping at the fixed pivot TP. Directly exploits the trend-tail edge
+//--- (payoff is only ~0.95 because the fixed TP caps winners). Ratchets only
+//--- in favour, never backward. letWinnersRun drops the hard TP so the trade
+//--- exits solely on the trail — the true let-it-run test.
+input bool     useTrailing=false;
+input double   trailAtrMult=3.0;
+input bool     letWinnersRun=false;
 //--- how often (minutes) to run break-even management. NOTE: this was
 //--- previously a latent bug (used the 12-min entry cadence); making it
 //--- explicit. Slower checks outperform 1-min (don't lock BE too eagerly).
@@ -189,7 +197,8 @@ void handle_new_tick()
 //string todayBias = get_previous_week_bias();
    if(verboseLog) Print("main::todayBias: ", todayBias);
 // can place max 2 trade per day
-   if(!isAlreadyPlaceATradeToday() && todayBias != "NOBIAS")
+   if(!isAlreadyPlaceATradeToday() && todayBias != "NOBIAS"
+      && (!useTrailing || CountOpenPositions()==0))   // #1: no stacking while a runner is open
      {
       //--- Get the current Bid price
       double currentBid = SymbolInfoDouble(tradingSymbol, SYMBOL_BID);
@@ -427,6 +436,22 @@ int total_trade_placed_today()
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
+//--- #1: count this EA's currently OPEN positions. The daily guard only blocks
+//--- a 2nd entry on the SAME day; with trailing/let-winners-run a position can
+//--- linger for weeks, so without this the EA would STACK positions every day.
+int CountOpenPositions()
+  {
+   int c=0;
+   for(int i=PositionsTotal()-1; i>=0; i--)
+     {
+      ulong tk=PositionGetTicket(i);
+      if(tk>0 && PositionGetInteger(POSITION_MAGIC)==EXPERT_MAGIC
+         && PositionGetString(POSITION_SYMBOL)==tradingSymbol)
+         c++;
+     }
+   return c;
+  }
+
 bool isAlreadyPlaceATradeToday()
   {
    datetime today_start_time = iTime(tradingSymbol, PERIOD_D1, 0);
@@ -572,7 +597,7 @@ void place_trade(ENUM_ORDER_TYPE orderType,double new_stop_lossPrice,double take
    request.magic = EXPERT_MAGIC;
 
    request.sl = new_stop_lossPrice;
-   request.tp = takeProfitPrice;
+   request.tp = letWinnersRun ? 0.0 : takeProfitPrice;   // #1: drop hard TP, exit on trail
 
 
    if(verboseLog) Print(SymbolInfoInteger(Symbol(), SYMBOL_FILLING_MODE));
@@ -690,6 +715,33 @@ void update_sl_to_be()
             if(verboseLog) Print("Changed : TAke profit to new:::", tp);
            }
          // END finding SL when BUY
+
+         //--- #1: ATR trailing ratchet (let winners run). Once price has moved
+         //--- in favour, trail SL to price -/+ trailAtrMult*ATR, only tightening.
+         if(useTrailing && trailAtrMult > 0.0)
+           {
+            double atrNow = 0.0;
+            if(CopyBuffer(atrHandle,0,1,1,ATR_Buffer)==1) atrNow = ATR_Buffer[0];
+            if(atrNow > 0.0)
+              {
+               double trail = trailAtrMult * atrNow;
+               double cur_sl = shouldRequestChange ? new_stop_loss : sl;
+               if(postition_type == POSITION_TYPE_BUY)
+                 {
+                  double cand = latest_price.bid - trail;
+                  if(cand < latest_price.bid && (cur_sl <= 0.0 || cand > cur_sl))
+                    { new_stop_loss = cand; new_tp = tp; shouldRequestChange = true; }
+                 }
+               else
+                  if(postition_type == POSITION_TYPE_SELL)
+                    {
+                     double cand = latest_price.ask + trail;
+                     if(cand > latest_price.ask && (cur_sl <= 0.0 || cand < cur_sl))
+                       { new_stop_loss = cand; new_tp = tp; shouldRequestChange = true; }
+                    }
+              }
+           }
+
          if(shouldRequestChange)
            {
             //--- zeroing the request and result values
