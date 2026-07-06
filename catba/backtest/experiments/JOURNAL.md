@@ -509,3 +509,24 @@ cleaner than ADX. STATUS: promising LEAD, IN-SAMPLE only, ~137 trials.
 NEEDS walk-forward + cross-pair (like minStop) before adopting. User's
 'wait for breakout to ENTER' part NOT tested (likely hurts — late entry,
 killzone lesson H4). The value is SKIP-QUIET (Sharpe), not breakout-entry.
+
+## 2026-07-06 — Liquidity-sweep consolidation filter — KILLED (definitive)
+liq_sweep_regime.py: 3 TFs (D/H4/H1) x 2 detectors (Kaufman ER + two-sided
+liquidity-sweep count, ICT accumulation vs displacement) x multiple lookbacks,
+pre-committed IS 2016-21 / OOS 2022-26.
+RESULT: EVERY variant cut net return (-238k..-781k) AND Sharpe (base 0.70;
+best filter 0.68). Skipped trades were net POSITIVE every time -> filter
+discards profit. In-sample winners collapsed OOS (H1 sweep k3: IS 0.84->OOS
+-1.20; H4 sweep k3: IS 1.04->OOS -2.12) = textbook overfit, caught by WF.
+SMOKING GUN (regime x losing-year P&L): losses live in the TREND/high-ER
+regime, not consolidation. 2020: consolid +21,951 vs trend -65,430. 2026:
+consolid +22,476 vs trend -38,454. Root cause of bad years = FALSE
+DISPLACEMENT (trends that sweep+displace then reverse: COVID V-reversals,
+whipsaws), the OPPOSITE of consolidation. A range filter would delete the
+profitable consolidation trades and keep the losing failed-trend trades ->
+strictly worse in exactly the years we want to fix.
+This also retires the earlier marginal 'skip-low-vol 0.63->0.70' lead: that
+was in-sample metric luck; rigorous WF+sweep says NO.
+NEXT candidate (targets the REAL problem): volatility THROTTLE — cut size
+when realized vol hits an extreme percentile (directly addresses 2020).
+Entry-side regime filters are done.
