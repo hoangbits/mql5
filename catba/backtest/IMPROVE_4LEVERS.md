@@ -105,3 +105,20 @@ bets in drawdowns (self-limiting, DD capped) and grows them on wins (compounding
 fixed lot over-bets in drawdowns (spiral to 38.9%) and under-bets after gains.
 EA default (useFixedRefStopSizing=true + useRiskPercentPerTrade) is correct.
 On $10k USD: +508% -> ~$60,800 (x6.08) over 10.5y, ~18-19%/yr, 16% maxDD (backtest).
+
+## Entry-cadence sweep (checkEveryMinutes), 2% risk + skip-Wed, full decade
+| cem(min) | net% | PF | maxDD | ret/DD | score |
+|---|---|---|---|---|---|
+| 1  | 231.6 | 1.13 | 27.0 | 8.6  | 57  |
+| 6  | 295.9 | 1.15 | 25.2 | 11.7 | 133 |
+| 9  | 589.6 | 1.23 | 20.9 | 28.2 | 384 |
+| 12 (current) | 508.3 | 1.21 | 16.3 | 31.2 | 362 |
+| 15 | 322.5 | 1.16 | 32.2 | 10.0 | 108 |
+VERDICT: sweet spot 9-12; extremes (1/6 too noisy, 15 poor fills) crater DD to
+25-32%. cem=9 highest raw return but +28% more DD than cem=12 for +16% return
+(worse trade); cem=12 best risk-adjusted (ret/DD 31.2) AND un-cherry-picked
+default -> KEEP 12. Fine 1-min entry checks = noise/whipsaw (more trades, worse
+PF, 2x DD). (Sampled 1/6/9/12/15; ~10min/run.) EA default checkEveryMinutes
+unchanged at 12. Note: MT5 .ini optimization syntax fell back to GUI state;
+single-run /config is reliable. Tester gotcha: a 2-min tool-timeout SIGTERM
+kills a backgrounded terminal -> launch detached (nohup&disown), poll separately.

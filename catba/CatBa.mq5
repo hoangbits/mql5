@@ -14,7 +14,7 @@
 //--- input parameters
 
 input double   lotSize=0.0;
-input double   riskPercentPerTrade=0.5;
+input double   riskPercentPerTrade=2.0;
 input bool     useRiskPercentPerTrade=true;
 input int      emaPeriod=13;   // 13 > default 8 on GBPJPY (H17 walk-forward+PBO;
                                // GBPJPY-specific, cross-pair failed — forward-confirm)
@@ -75,6 +75,10 @@ input bool     letWinnersRun=false;
 //--- whipsaw on a rate-sensitive carry pair (timing_filters.py). Tester-
 //--- confirmed +7% net / PF 1.16->1.22, so ON by default (Wed=3). -1 = off.
 input int      blockEntryDOW=3;
+//--- one-off sweep helper: when true, OnTester writes a per-run summary file
+//--- keyed by checkEveryMinutes so an optimization sweep yields one readable
+//--- file per value (parallel agents write distinct files, no clash).
+input bool     dumpSweepFile=false;
 //--- how often (minutes) to run break-even management. NOTE: this was
 //--- previously a latent bug (used the 12-min entry cadence); making it
 //--- explicit. Slower checks outperform 1-min (don't lock BE too eagerly).
@@ -879,6 +883,19 @@ double OnTester()
       for(int k=0; k<nYears; k++)
          FileWrite(fh, yearNum[k], yearNet[k]);
       FileClose(fh);
+     }
+
+//--- per-value sweep file (gated) for a checkEveryMinutes optimization sweep
+   if(dumpSweepFile)
+     {
+      string sfn = "sweep_cem_" + IntegerToString(checkEveryMinutes) + ".csv";
+      int fsw = FileOpen(sfn, FILE_WRITE|FILE_CSV|FILE_ANSI|FILE_COMMON, ',');
+      if(fsw!=INVALID_HANDLE)
+        {
+         FileWrite(fsw,"checkEveryMinutes","netPct","profitFactor","maxDDpct","worstYearPct","posYears","trades","score");
+         FileWrite(fsw,checkEveryMinutes,netPct,profitFactor,maxDDpct,worstYearPct,posYears,(int)trades,score);
+         FileClose(fsw);
+        }
      }
 
 //--- RICH per-trade dump (entry paired with exit) for loss-mode analysis
