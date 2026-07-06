@@ -72,8 +72,9 @@ input double   trailAtrMult=3.0;
 input bool     letWinnersRun=false;
 //--- block entries on a given weekday (MQL5 day_of_week: Sun=0..Sat=6; Wed=3).
 //--- Wednesday has lost 9/11 years (2018-26 consecutively) — likely FOMC-day
-//--- whipsaw on a rate-sensitive carry pair (timing_filters.py). -1 = off.
-input int      blockEntryDOW=-1;
+//--- whipsaw on a rate-sensitive carry pair (timing_filters.py). Tester-
+//--- confirmed +7% net / PF 1.16->1.22, so ON by default (Wed=3). -1 = off.
+input int      blockEntryDOW=3;
 //--- how often (minutes) to run break-even management. NOTE: this was
 //--- previously a latent bug (used the 12-min entry cadence); making it
 //--- explicit. Slower checks outperform 1-min (don't lock BE too eagerly).

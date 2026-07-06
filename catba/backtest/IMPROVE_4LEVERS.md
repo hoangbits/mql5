@@ -73,3 +73,21 @@ band: no robust losing band. Hold-time <2h loses -452k but is an EXIT property
   to keep benign Wednesdays — needs an FOMC calendar.
 VERDICT: adopt for the forward demo (A/B vs baseline). Strongest lead since
 min-stop.
+
+## Wednesday-skip at 2% risk (COMPOUNDING) — A/B, full decade
+Equity-proportional ref-stop sizing (refStopPips=70), 2% risk/trade, ¥1.6M start.
+| 2% risk | trade all days | SKIP WED |
+|---|---|---|
+| net | +395.7% | **+508.3%** |
+| PF | 1.13 | **1.21** |
+| maxDD | 22.3% | **16.3%** |
+| worstYr | -22.8% | **-12.6%** |
+| final | ¥7.9M | **¥9.7M** |
+Skip-Wed better on BOTH return and drawdown when compounding (avoided losses
+keep equity base higher -> more compounding + smoother curve). Note: 2% is
+aggressive (16-22% DD); 0.5% default ~= 1/4 the DD & growth. blockEntryDOW=3
+now EA default.
+
+Q (first-30 vs last-30 min of hour): NO meaningful edge — both halves positive
+IS & OOS (first :00-29 avg +440, last :30-59 avg +529). Finer: top-of-hour
+:00-09 best (+1790), :20-29 flat (-6) — 12-min-cadence artifact, not a filter.
