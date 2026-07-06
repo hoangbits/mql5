@@ -122,3 +122,20 @@ PF, 2x DD). (Sampled 1/6/9/12/15; ~10min/run.) EA default checkEveryMinutes
 unchanged at 12. Note: MT5 .ini optimization syntax fell back to GUI state;
 single-run /config is reliable. Tester gotcha: a 2-min tool-timeout SIGTERM
 kills a backgrounded terminal -> launch detached (nohup&disown), poll separately.
+
+## PHASE sensitivity (checkOffsetMinutes) at cem=12 — ROBUSTNESS RED FLAG
+Entry-check grid phase (which minutes within the hour). phase0 = :00,:12,:24,
+:36,:48 (epoch-aligned, = live). 2% risk + skip-Wed, full decade JPY.
+| phase | net% | PF | maxDD |
+|---|---|---|---|
+| 0 | 508.3 | 1.21 | 16.3 |
+| 3 | 280.4 | 1.16 | 18.0 |
+| 6 | 189.8 | 1.12 | 27.9 |
+| 9 | 226.6 | 1.13 | 22.3 |
+FINDING: a 3-9 min shift of the (noise) check phase moves net 508%->190-280%
+and DD 16%->28%. phase0 (+508%) is the LUCKY OUTLIER; other 3 avg ~232%. The
+headline +508% is NOT robust — realistic expectation ~250-300% (all prior
+project numbers were phase-0-optimistic). Live runs phase0 (matches 508
+mechanically) but no guarantee phase0 stays lucky forward. Strong evidence the
+edge is timing-fragile -> FORWARD-TEST before real risk. EA default
+checkOffsetMinutes=0 (unchanged; = live behavior).

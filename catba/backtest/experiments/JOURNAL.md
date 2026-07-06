@@ -611,3 +611,13 @@ TESTER blockEntryDOW=3: net 42.7->45.7% (+7%), PF 1.16->1.22, worstYr
 worse). Real-time validatable (flag end-2021 from 4 neg yrs -> holds 2022-26).
 EA: added blockEntryDOW input (MQL5 dow, Wed=3; default -1 OFF). Strongest lead
 since min-stop. Adopt for forward A/B. Refine later: FOMC-only Wednesdays.
+
+## 2026-07-07 — Entry-check PHASE sensitivity — ROBUSTNESS RED FLAG (key finding)
+User asked: cem=12 checks at :00,:12,:24,:36,:48 (yes, epoch-aligned) — why not
+:03,:15,...? Added checkOffsetMinutes input, tested phases 0/3/6/9 at cem=12
+(2% risk, skip-Wed). RESULT: net 508/280/190/227%, DD 16/18/28/22%. A noise-
+dimension 3-9min shift ~halves return. phase0 (+508%) = LUCKY OUTLIER; other 3
+avg ~232%. => headline +508% NOT robust; realistic ~250-300%; ALL prior project
+numbers are phase-0-optimistic. Live = phase0 (mechanically matches 508) but no
+guarantee it stays lucky. Strongest reason yet to forward-test. Default
+checkOffsetMinutes=0 unchanged.

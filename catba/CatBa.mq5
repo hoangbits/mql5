@@ -19,6 +19,10 @@ input bool     useRiskPercentPerTrade=true;
 input int      emaPeriod=13;   // 13 > default 8 on GBPJPY (H17 walk-forward+PBO;
                                // GBPJPY-specific, cross-pair failed — forward-confirm)
 input int      checkEveryMinutes=12;
+//--- PHASE offset (minutes) for the entry-check grid. 0 -> checks at :00,:12,
+//--- :24,:36,:48 (epoch-aligned). 3 -> :03,:15,:27,:39,:51. Noise-dimension
+//--- test: no economic reason one phase beats another (scatter = overfit risk).
+input int      checkOffsetMinutes=0;
 input string   timeFrame="H1";
 input string   tradingSymbol="GBPJPY";
 input string   symbolUJOnBroker="USDJPY";
@@ -148,7 +152,7 @@ void OnDeinit(const int reason)
 void OnTick()
   {
 // get current range
-   datetime currenTFtRange = TimeCurrent() / (60 * checkEveryMinutes);
+   datetime currenTFtRange = (TimeCurrent() - checkOffsetMinutes*60) / (60 * checkEveryMinutes);
 
    if(currenTFtRange != previousRange)
      {
