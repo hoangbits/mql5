@@ -558,3 +558,24 @@ regime. Standalone MR Sharpe -0.48 (IS -0.53/OOS -0.42). Corr to CatBa -0.06
 is carry/rate-differential TRENDING -> fading fights the drift. 2nd MR death
 (after turtle-soup twin). Pattern: GBPJPY rewards trend, punishes reversion.
 Last untested orthogonal family = intraday/session structure -> testing next.
+
+## 2026-07-06 — Session/intraday edges — KILLED — GBPJPY edge search CONCLUSIVE
+session_edge.py + cost/decomp checks.
+A) London-expansion breakout (break Asian range in London -> ride to close):
+   gross Sharpe 0.59 (IS .53/OOS .66), corr to CatBa -0.15 -> LOOKED like the
+   2nd uncorrelated edge. But NET OF COSTS it dies: 2p spread -> Sharpe 0.05
+   (+467p/decade), 3p -> negative. ~2.2p/day gross can't pay a 2p spread. Per-
+   year noise. MIRAGE.
+B) Hour-of-day: h0->h1 'Tokyo drift' Sharpe 3.58 net 2p -> ROLLOVER ARTIFACT.
+   Decomp: -18,686p overnight gap (h23c->h0o rollover reprice) sits under the
+   entry; profit is just inside-candle recovery of the midnight spread/swap.
+   Midnight-server spread 15-30p unmodeled. Untradeable. Adjacent Tokyo hours
+   (h1->h2) die at 3p cost -> edge concentrated in rollover candle = tell.
+VERDICT (whole search): every orthogonal family tested — consolidation filter,
+vol throttle, MR x2, session breakout, hour-of-day — is DEAD. GBPJPY has ONE
+robust cost-surviving edge for a retail systematic trader: TREND CONTINUATION
+(CatBa captures it). Structural: carry-trend pair punishes reversion; intraday
+edges eaten by spread or rollover artifacts. LUMPINESS CANNOT BE FIXED ON
+GBPJPY ALONE — a 2nd edge needs a DIFFERENT INSTRUMENT (per DARWINEX_TARGET).
+GBPJPY-only research has hit bedrock. Lessons: always net spread; distrust
+rollover-candle edges.
