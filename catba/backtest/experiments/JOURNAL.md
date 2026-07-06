@@ -547,3 +547,14 @@ diffuse (low-vol chop + failed mid-trends). The lumpiness is the STRUCTURAL
 signature of a trend-following edge, not a filterable bug. Solo-tuning CatBa
 is DONE. Only real durability fix = a 2nd uncorrelated edge (per
 DARWINEX_TARGET.md), + start the forward track record now.
+
+## 2026-07-06 — MR complement (vol-conditioned z-fade) — KILLED (2nd MR death)
+mr_complement.py: daily z-score fade (Z=1.0/1.5), conditioned by ATR-pct
+regime, hypothesis 'MR works in LOW vol where CatBa bleeds'. FALSE:
+LOW-vol fade net -4630p (IS -2869/OOS -1761), win 46.5% -> LOSES in target
+regime. Standalone MR Sharpe -0.48 (IS -0.53/OOS -0.42). Corr to CatBa -0.06
+(uncorrelated) BUT it's a negatively-correlated LOSER -> combo Sharpe
+0.70->0.16, no extra green yrs, worse worst-month. STRUCTURAL REASON: GBPJPY
+is carry/rate-differential TRENDING -> fading fights the drift. 2nd MR death
+(after turtle-soup twin). Pattern: GBPJPY rewards trend, punishes reversion.
+Last untested orthogonal family = intraday/session structure -> testing next.
