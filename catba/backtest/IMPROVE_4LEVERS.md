@@ -91,3 +91,17 @@ now EA default.
 Q (first-30 vs last-30 min of hour): NO meaningful edge — both halves positive
 IS & OOS (first :00-29 avg +440, last :30-59 avg +529). Finer: top-of-hour
 :00-09 best (+1790), :20-29 flat (-6) — 12-min-cadence artifact, not a filter.
+
+## Sizing verified: % risk vs FIXED LOT at MATCHED starting risk (skip-Wed)
+Fixed lot 0.46 ~= 2% of 1.6M on 70-pip ref stop -> isolates compounding.
+| skip-Wed | fixed 0.46 (no compound) | 2% risk (compound) |
+|---|---|---|
+| net | +210% | **+508%** |
+| maxDD | **38.9%** | **16.3%** |
+| PF | 1.22 | 1.21 |
+VERDICT: % risk (equity-proportional ref-stop) DOMINATES fixed lot — 2.4x return
+AND <half the drawdown at the same starting risk. Mechanism: % risk auto-shrinks
+bets in drawdowns (self-limiting, DD capped) and grows them on wins (compounding);
+fixed lot over-bets in drawdowns (spiral to 38.9%) and under-bets after gains.
+EA default (useFixedRefStopSizing=true + useRiskPercentPerTrade) is correct.
+On $10k USD: +508% -> ~$60,800 (x6.08) over 10.5y, ~18-19%/yr, 16% maxDD (backtest).
