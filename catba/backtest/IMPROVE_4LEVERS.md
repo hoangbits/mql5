@@ -54,3 +54,22 @@ None of the 4 is a free profit boost — the EA is already well-tuned. Real valu
 (don't try to "let it run"); (3) confirmed parameter robustness (safe to deploy);
 (4) flagged rollover-hour cost fragility. Optional "lower-DD mode" (trail+TP)
 exists if Darwinex risk score matters more than raw return.
+
+## #5 (bonus) TIMING FILTER — skip Wednesday entries  → REAL, tester-confirmed ✅
+User asked about day-of-week / week-of-month / entry-hour filters. Tested all
+with IS/OOS discipline (timing_filters.py). Week-of-month: no signal. Entry-hour
+band: no robust losing band. Hold-time <2h loses -452k but is an EXIT property
+(not tradeable at entry — losers just stop out fast). Day-of-week: WEDNESDAY.
+- Wednesday net -124,778 over decade; negative 9/11 years, CONSECUTIVELY 2018-26
+  (4 IS + 5 OOS). Only 2016-17 positive. Mechanism: FOMC lands on Wednesdays;
+  Fed became highly market-moving post-2018; GBPJPY rate-sensitive carry pair.
+- TESTER (blockEntryDOW=3): net 42.7%->45.7% (+7%), PF 1.16->1.22, worstYr
+  -1.18%->-0.95%, score 21.7->24.2, 8/11 years improved. maxDD 9.7->10.3%
+  (marginally worse). Real-time validatable: 2018-21 all negative -> would have
+  been flagged end-2021 -> held every year 2022-26.
+- Caveats: tested 5 weekdays (multiple-testing), but 9 consecutive yrs +
+  mechanism + tester confirmation >> chance. Opt-in: blockEntryDOW=3.
+- REFINEMENT idea (untested): skip only FOMC Wednesdays (~8/yr) vs all (~50/yr)
+  to keep benign Wednesdays — needs an FOMC calendar.
+VERDICT: adopt for the forward demo (A/B vs baseline). Strongest lead since
+min-stop.

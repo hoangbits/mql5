@@ -70,6 +70,10 @@ input double   add_pip_to_sl=0.2;
 input bool     useTrailing=false;
 input double   trailAtrMult=3.0;
 input bool     letWinnersRun=false;
+//--- block entries on a given weekday (MQL5 day_of_week: Sun=0..Sat=6; Wed=3).
+//--- Wednesday has lost 9/11 years (2018-26 consecutively) — likely FOMC-day
+//--- whipsaw on a rate-sensitive carry pair (timing_filters.py). -1 = off.
+input int      blockEntryDOW=-1;
 //--- how often (minutes) to run break-even management. NOTE: this was
 //--- previously a latent bug (used the 12-min entry cadence); making it
 //--- explicit. Slower checks outperform 1-min (don't lock BE too eagerly).
@@ -197,7 +201,9 @@ void handle_new_tick()
 //string todayBias = get_previous_week_bias();
    if(verboseLog) Print("main::todayBias: ", todayBias);
 // can place max 2 trade per day
-   if(!isAlreadyPlaceATradeToday() && todayBias != "NOBIAS"
+   MqlDateTime _dowNow; TimeToStruct(TimeCurrent(), _dowNow);
+   bool dowBlocked = (blockEntryDOW >= 0 && _dowNow.day_of_week == blockEntryDOW);
+   if(!isAlreadyPlaceATradeToday() && todayBias != "NOBIAS" && !dowBlocked
       && (!useTrailing || CountOpenPositions()==0))   // #1: no stacking while a runner is open
      {
       //--- Get the current Bid price

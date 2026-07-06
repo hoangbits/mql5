@@ -599,3 +599,15 @@ rollover-aware). hr0 rollover entries +140k are spread-fragile. Hygiene fix.
 EA changes: added useTrailing/trailAtrMult/letWinnersRun inputs (default OFF),
 CountOpenPositions() anti-stack guard, letWinnersRun drops hard TP. Production
 behavior UNCHANGED (all new features opt-in, off by default). Compiles 0 err.
+
+## 2026-07-06 — Day-of-week timing filter — WEDNESDAY skip CONFIRMED (real)
+timing_filters.py (IS/OOS) + tester. Week-of-month: no signal. Entry-hour band:
+no robust losing band. Hold<2h loses -452k but is EXIT-side (not tradeable).
+DAY-OF-WEEK: Wednesday net -124,778, negative 9/11 yrs, CONSECUTIVE 2018-2026
+(4 IS + 5 OOS); only 2016-17 positive. Mechanism = FOMC-Wednesday whipsaw on
+rate-sensitive carry pair, intensifying post-2018 Fed activism.
+TESTER blockEntryDOW=3: net 42.7->45.7% (+7%), PF 1.16->1.22, worstYr
+-1.18->-0.95%, score 21.7->24.2, 8/11 yrs better, maxDD 9.7->10.3% (marginally
+worse). Real-time validatable (flag end-2021 from 4 neg yrs -> holds 2022-26).
+EA: added blockEntryDOW input (MQL5 dow, Wed=3; default -1 OFF). Strongest lead
+since min-stop. Adopt for forward A/B. Refine later: FOMC-only Wednesdays.
