@@ -694,3 +694,17 @@ Tester (2% risk, skip-Wed, knife baseline PF 1.241):
 Wedge (thin-liquidity) is real but only capturable at whole-period granularity
 (month), not intraday (hour). skipMonths default "12"; skipHours stays "".
 Both DD numbers compounding-fragile — trust PF. Added skipMonths/skipHours inputs.
+
+## 2026-07-08 — Spread reconciliation: user's GUI PF 1.17 vs my headless 1.27
+User's GUI test showed PF 1.17; my headless runs showed 1.27. Diagnosed:
+my OnTester PF = TesterStatistics(STAT_PROFIT_FACTOR) (same metric, not a calc
+diff). INI Spread= is IGNORED by headless tester (Spread=20 gave identical
+result). Recomputed PF from my 1052-trade dump subtracting round-trip spread:
+0p->1.29, 1p->1.25, 2p->1.21, 3p->1.172. So at realistic ~3-pip Darwinex GBPJPY
+spread, my EXACT config = PF 1.172 = user's 1.17. CONCLUSION: config matches
+(filters ON), gap is 100% SPREAD; my headless used ~0.5p (optimistic). USER'S
+1.17 IS THE HONEST NUMBER. Real edge PF ~1.15-1.17 (>1 but thin); live shaves
+more via slippage -> ~1.15 working expectation. ALL headline backtest %/PF are
+~0.5p-spread optimistic; discount accordingly (0.5%-risk +90%/decade -> realistic
+~+60-70%/decade / ~5%/yr at ~10% DD). Confirms the standing 'live is lower' caveat
+QUANTITATIVELY.
