@@ -684,3 +684,13 @@ Not cherry-picked — one liquidity mechanism, four places.
 ACTIONABLE: (1) skip-December (clean, ~+65k, top priority) (2) skip thin-hours
 18-23 + 7/13 (needs tester — hour-skip re-routes daily trade). Multiple-testing
 caveat mitigated by shared mechanism; still need tester+forward validation.
+
+## 2026-07-07 — Time filters validated: December YES, thin-hours NO
+Tester (2% risk, skip-Wed, knife baseline PF 1.241):
+- +skipMonths=12 (Dec): PF 1.241->1.269 (clean, no re-route) — ADOPT, default "12".
+- +skipHours=7,13,18-23: PF 1.241->1.237 (WORSE), DD 16->23%, worstYr -53%.
+  RE-ROUTING kills it (daily trade re-routes to later hour) — same lesson as
+  mark-restriction: per-hour losses are DESCRIPTIVE not prescriptive. REJECT.
+Wedge (thin-liquidity) is real but only capturable at whole-period granularity
+(month), not intraday (hour). skipMonths default "12"; skipHours stays "".
+Both DD numbers compounding-fragile — trust PF. Added skipMonths/skipHours inputs.

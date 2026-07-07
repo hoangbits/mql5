@@ -94,6 +94,16 @@ input bool     dumpSweepFile=false;
 //--- (timeict_autopsy). Real-time knowable. Tail-risk cleanup — validated
 //--- (PF 1.21->1.24, maxDD unchanged), so ON by default.
 input bool     useFallingKnifeFilter=true;
+//--- skip entries in these calendar months (comma list, e.g. "12" = December).
+//--- CatBa bleeds in thin-liquidity windows; December is LOSE-both IS/OOS
+//--- (year-end holidays -> false/choppy trends). Validated: PF 1.24->1.27
+//--- (clean, no re-route). Empty = trade all months. Default skips December.
+input string   skipMonths="12";
+//--- skip entries in these server hours (comma list, e.g. "7,13,18,19,20,21,22,23").
+//--- Thin-liquidity session lulls (pre-London hr7, pre-NY hr13, evening 18-23)
+//--- are robust losers (time research). NOTE: hour-skip RE-ROUTES the daily
+//--- trade to a later hour, so effect != raw per-hour P&L. Empty = all hours.
+input string   skipHours="";
 //--- how often (minutes) to run break-even management. NOTE: this was
 //--- previously a latent bug (used the 12-min entry cadence); making it
 //--- explicit. Slower checks outperform 1-min (don't lock BE too eagerly).
@@ -235,6 +245,22 @@ void handle_new_tick()
 // can place max 2 trade per day
    MqlDateTime _dowNow; TimeToStruct(TimeCurrent(), _dowNow);
    bool dowBlocked = (blockEntryDOW >= 0 && _dowNow.day_of_week == blockEntryDOW);
+   //--- skip thin-liquidity months (e.g. December)
+   bool monthBlocked = false;
+   if(skipMonths != "")
+     {
+      string mp[]; int nmp=StringSplit(skipMonths,',',mp);
+      for(int mmi=0; mmi<nmp; mmi++)
+         if((int)StringToInteger(mp[mmi])==_dowNow.mon) { monthBlocked=true; break; }
+     }
+   //--- skip thin-liquidity hours (session lulls)
+   bool hourBlocked = false;
+   if(skipHours != "")
+     {
+      string hp[]; int nhp=StringSplit(skipHours,',',hp);
+      for(int hhi=0; hhi<nhp; hhi++)
+         if((int)StringToInteger(hp[hhi])==_dowNow.hour) { hourBlocked=true; break; }
+     }
    //--- ICT falling-knife filter (see input comment): skip when today already
    //--- swept yesterday's opposite extreme against the bias.
    bool knifeBlocked = false;
@@ -246,6 +272,7 @@ void handle_new_tick()
       if(todayBias=="SELL" && tHigh>yHigh) knifeBlocked=true;
      }
    if(!isAlreadyPlaceATradeToday() && todayBias != "NOBIAS" && !dowBlocked && !knifeBlocked
+      && !monthBlocked && !hourBlocked
       && (!useTrailing || CountOpenPositions()==0))   // #1: no stacking while a runner is open
      {
       //--- Get the current Bid price

@@ -40,4 +40,6 @@ blockEntryDOW=3
 dumpSweepFile=false
 useFallingKnifeFilter=true
 checkOffsetMinutes=0
+skipMonths=12
+skipHours=
 entryMarks=
