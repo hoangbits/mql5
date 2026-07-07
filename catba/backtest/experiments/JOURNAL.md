@@ -670,3 +670,17 @@ pre-NY lull) — candidate skip-hours. :36 mark also WIN-both (+289k, mostly OOS
 NEXT: test bar-close-confirmed entries (checkEveryMinutes=60 = only :00) — does
 restricting to the bar boundary improve robustness (off-:00 are the weak ones)?
 + tester-validate skip hr7/hr13.
+
+## 2026-07-07 — TIME research: the LIQUIDITY wedge (month/session/hour)
+Comprehensive IS/OOS pass on tradesx_ema13. NEW robust LOSE-both buckets:
+- DECEMBER: -64,858 (IS -28k/OOS -37k), 49% win, 124 trades. Clean skip (no
+  re-route). Year-end thin liquidity.
+- OFF-HOURS 18-23: -45,752 (IS -25k/OOS -21k), 44% win, 66 trades. Evening lull.
+- HOUR 7 (pre-London) -68,558 neg 8/11 yrs; HOUR 13 (pre-NY) -60,339 neg 8/11.
+UNIFYING MECHANISM: CatBa (trend-continuation) LOSES IN THIN-LIQUIDITY WINDOWS
+(Dec, 18-23, 7/13 session lulls) — false/choppy breakouts w/o participation.
+Confirmed inversely by winners: Asian(0-7) +651k, Q3 +403k, Jul/Sep/Jan win-both.
+Not cherry-picked — one liquidity mechanism, four places.
+ACTIONABLE: (1) skip-December (clean, ~+65k, top priority) (2) skip thin-hours
+18-23 + 7/13 (needs tester — hour-skip re-routes daily trade). Multiple-testing
+caveat mitigated by shared mechanism; still need tester+forward validation.
