@@ -722,3 +722,18 @@ spread (remove marginal trades spread sinks). Base at 3p = 1.05 (edge nearly
 gone); all-filters = 1.23 pip / ~1.17 money -> FILTERS ARE MOST OF THE EDGE at
 realistic spread. Config validated at honest costs. Next P3: cost reduction
 (avoid high-spread entry windows / rollover hr0).
+
+## 2026-07-08 — 5hr plan P3/P4 + Monte Carlo (overnight, user asleep)
+P3 cost: hidden rollover cost — hr0 backtest PF 1.21 but real rollover spread
+15-30p makes it a mirage (109 trades will underperform live); consider
+skipHours="0" for live. Hour-filtering else fails (re-route). Strong hours
+3/5/15/17 (liquid sessions) confirm liquidity theme.
+MONTE CARLO (all filters, 3p spread, 1129 trades, 58.5% win, +5.9p/trade):
+ risk  decadeRet  medianDD  95thDD  worstDD
+ 0.5%  +58%       9%        14%     25%
+ 1.0%  +143%      18%       27%     40%
+ 2.0%  +421%      34%       48%     66%
+=> 2% risk = 34% typical DD, up to 48-66% -> account-threatening on a THIN edge.
+STRONG REC: deploy at 0.5% (9% DD), raise later only if forward confirms. Wrote
+MORNING_BRIEF.md. Config final & validated at honest costs; forward demo is the
+only remaining real information source.
