@@ -139,3 +139,17 @@ project numbers were phase-0-optimistic). Live runs phase0 (matches 508
 mechanically) but no guarantee phase0 stays lucky forward. Strong evidence the
 edge is timing-fragile -> FORWARD-TEST before real risk. EA default
 checkOffsetMinutes=0 (unchanged; = live behavior).
+
+## Falling-knife filter — IMPLEMENTED + validated (useFallingKnifeFilter, default ON)
+Skip entry when today already swept yesterday's OPPOSITE extreme vs bias
+(buy-bias + today<y-low, or sell-bias + today>y-high). 2% risk, skip-Wed, cem12:
+| | net% | PF | maxDD | trades |
+|---|---|---|---|---|
+| baseline | 508.3 | 1.21 | 16.3 | 1190 |
+| + knife | 1032.6 | 1.24 | 16.3 | 1144 |
+TRUSTWORTHY: PF 1.21->1.24, maxDD UNCHANGED, -46 trades (the 10%-win setup) =
+real zero-downside improvement. NOT TRUSTWORTHY: the 508->1033% "doubling" is a
+COMPOUNDING artifact (knife losers concentrated 2016-17; removing early losses
+compounds the whole curve; 2016 alone +101k->+1037k). Won't repeat forward
+(rare post-2017). Adopt for the sound trade-set/PF improvement, not the headline.
+Default set ON.

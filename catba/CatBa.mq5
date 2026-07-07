@@ -83,6 +83,13 @@ input int      blockEntryDOW=3;
 //--- keyed by checkEveryMinutes so an optimization sweep yields one readable
 //--- file per value (parallel agents write distinct files, no clash).
 input bool     dumpSweepFile=false;
+//--- ICT "falling-knife" filter: skip entries where TODAY has already swept
+//--- yesterday's OPPOSITE extreme against the daily bias (buy-bias + today
+//--- broke below yesterday's low, or sell-bias + broke above yesterday's high)
+//--- = stale bias fighting an active break, CatBa's 10%-win setup
+//--- (timeict_autopsy). Real-time knowable. Tail-risk cleanup — validated
+//--- (PF 1.21->1.24, maxDD unchanged), so ON by default.
+input bool     useFallingKnifeFilter=true;
 //--- how often (minutes) to run break-even management. NOTE: this was
 //--- previously a latent bug (used the 12-min entry cadence); making it
 //--- explicit. Slower checks outperform 1-min (don't lock BE too eagerly).
@@ -212,7 +219,17 @@ void handle_new_tick()
 // can place max 2 trade per day
    MqlDateTime _dowNow; TimeToStruct(TimeCurrent(), _dowNow);
    bool dowBlocked = (blockEntryDOW >= 0 && _dowNow.day_of_week == blockEntryDOW);
-   if(!isAlreadyPlaceATradeToday() && todayBias != "NOBIAS" && !dowBlocked
+   //--- ICT falling-knife filter (see input comment): skip when today already
+   //--- swept yesterday's opposite extreme against the bias.
+   bool knifeBlocked = false;
+   if(useFallingKnifeFilter && todayBias != "NOBIAS")
+     {
+      double yLow=iLow(tradingSymbol,PERIOD_D1,1), yHigh=iHigh(tradingSymbol,PERIOD_D1,1);
+      double tLow=iLow(tradingSymbol,PERIOD_D1,0), tHigh=iHigh(tradingSymbol,PERIOD_D1,0);
+      if(todayBias=="BUY"  && tLow<yLow)   knifeBlocked=true;
+      if(todayBias=="SELL" && tHigh>yHigh) knifeBlocked=true;
+     }
+   if(!isAlreadyPlaceATradeToday() && todayBias != "NOBIAS" && !dowBlocked && !knifeBlocked
       && (!useTrailing || CountOpenPositions()==0))   // #1: no stacking while a runner is open
      {
       //--- Get the current Bid price
