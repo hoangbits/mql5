@@ -23,6 +23,10 @@ input int      checkEveryMinutes=12;
 //--- :24,:36,:48 (epoch-aligned). 3 -> :03,:15,:27,:39,:51. Noise-dimension
 //--- test: no economic reason one phase beats another (scatter = overfit risk).
 input int      checkOffsetMinutes=0;
+//--- restrict entries to specific minute-of-hour marks (comma list, e.g.
+//--- "0,36"). With checkEveryMinutes=12 the grid is :00,:12,:24,:36,:48; the
+//--- :00 (H1 bar close) mark is the robust edge (time_aspect.py). Empty = all.
+input string   entryMarks="";
 input string   timeFrame="H1";
 input string   tradingSymbol="GBPJPY";
 input string   symbolUJOnBroker="USDJPY";
@@ -195,6 +199,18 @@ void OnTrade()
 //+------------------------------------------------------------------+
 void handle_new_tick()
   {
+//--- TIME: restrict entries to specific :MM marks (e.g. "0,36"). The 12-min
+//--- grid fires at :00/:12/:24/:36/:48; :00 (H1 bar close) is the robust edge.
+   if(entryMarks != "")
+     {
+      int mnow = (int)((TimeCurrent()%3600)/60);
+      int mark = (mnow/12)*12;                 // floor to nearest 12-mark
+      string parts[]; int np=StringSplit(entryMarks,',',parts);
+      bool markOK=false;
+      for(int mi=0; mi<np; mi++)
+         if((int)StringToInteger(parts[mi])==mark) { markOK=true; break; }
+      if(!markOK) return;
+     }
 //--- H4: restrict new entries to configured killzone hours (server time)
    if(kz1StartHour >= 0)
      {

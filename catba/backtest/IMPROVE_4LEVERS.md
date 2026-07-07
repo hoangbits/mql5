@@ -153,3 +153,16 @@ COMPOUNDING artifact (knife losers concentrated 2016-17; removing early losses
 compounds the whole curve; 2016 alone +101k->+1037k). Won't repeat forward
 (rare post-2017). Adopt for the sound trade-set/PF improvement, not the headline.
 Default set ON.
+
+## Restrict entries to 2-of-5 marks (:00+:36) — WORSE (descriptive != prescriptive)
+Added entryMarks input. 2% risk, skip-Wed, cem12:
+| | net% | PF | maxDD | green |
+|---|---|---|---|---|
+| all 5 marks | 508.3 | 1.21 | 16.3 | 9/11 |
+| :00+:36 only | 471.0 | 1.18 | 22.1 | 8/11 |
+LESSON: per-mark P&L (:00=+354k WIN-both) is DESCRIPTIVE (where good trades
+landed), NOT prescriptive. Restricting checks to :00+:36 RE-ROUTES days that
+triggered at :12/:24/:48 to later marks -> worse fills -> PF down, DD up. Fits
+cadence sweep (more checks 9-12/hr > fewer). The 5-mark grid is near-optimal
+because it catches the pullback at the FIRST/best moment. Cherry-picking marks
+by restriction FAILS. entryMarks input left in (default "" = all).
