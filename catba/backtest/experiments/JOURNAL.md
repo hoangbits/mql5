@@ -655,3 +655,18 @@ concepts don't apply to trend-following CatBa. Killzone: Asian-session entries
 (hr<8) carry the profit (win-both, +651k); London/NY mixed (not robust losers).
 STATUS: falling-knife filter is real+sound but modest forward benefit; optional
 implement (input-gated) + tester-validate if worst-case reduction wanted.
+
+## 2026-07-07 — TIME aspect deep-dive (user hypothesis: :00 grid is real edge)
+time_aspect.py. CORRECTS earlier "phase-0 = lucky" framing — user was right.
+:00 MARK (H1 bar boundary): 195 trades, 59% win, +354,728, WIN-BOTH (IS +231k/
+OOS +124k), robust both sides (BUY 62%/SELL 56%). BAR-BOUNDARY test: at-:00 =
++355k WIN-both; off-:00 (1434 trades) = +419k but IS-NEGATIVE (-43k)/mixed. =>
+the :00 edge is REAL & robust; it EXPLAINS why phase-0 beat phases 3/6/9 — only
+phase-0 samples the bar close. Mechanism: entries confirmed at H1 close (fresh
+EMA + round-mark institutional flow) are cleaner. NOT luck.
+Also robust LOSING hours (both halves): hr7 (-68k, pre-London) & hr13 (-60k,
+pre-NY lull) — candidate skip-hours. :36 mark also WIN-both (+289k, mostly OOS)
+- non-boundary, unexplained, worth digging.
+NEXT: test bar-close-confirmed entries (checkEveryMinutes=60 = only :00) — does
+restricting to the bar boundary improve robustness (off-:00 are the weak ones)?
++ tester-validate skip hr7/hr13.
