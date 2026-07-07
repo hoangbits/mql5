@@ -621,3 +621,18 @@ avg ~232%. => headline +508% NOT robust; realistic ~250-300%; ALL prior project
 numbers are phase-0-optimistic. Live = phase0 (mechanically matches 508) but no
 guarantee it stays lucky. Strongest reason yet to forward-test. Default
 checkOffsetMinutes=0 unchanged.
+
+## 2026-07-07 — CatBa on XAUUSD (gold) + ICT killzones — NO EDGE
+User: test gold, thinks timing matters (ICT). Gold data IS available on Darwinex.
+EA is mostly instrument-agnostic (pivots/ATR-BE/tickvalue sizing auto-scale) but
+3 params GBPJPY-hardcoded (addPipsToEMA raw-price, minStopPips*0.01, refStopPips
+via pip=0.01) -> rescaled roughly (addPips 3, minStop 750=$7.5, refStop 1700=$17).
+RESULT (2024-2026, 2% risk, skip-Wed):
+  no-timing:  -19.6%, PF 0.95, DD 61%, 235 trades, 1/2 green
+  +killzones (9-12,14-17 server): -51.2%, PF 0.77, DD 61%, 180 trades, 0/2 green
+=> CatBa's daily-bias+EMA logic has NO edge on gold; ICT killzone timing made it
+WORSE not better. Timing DOES matter (killzones changed -19->-51%) but not in
+CatBa's favor. Caveats: rough scaling (refStop too small inflates DD), 2yr only,
+one killzone def. Verdict: CatBa is GBPJPY-specific; gold+ICT needs a PURPOSE-
+BUILT killzone-liquidity strategy, not a CatBa retrofit. EA default symbol still
+GBPJPY; gold was input-only (no production change).
