@@ -708,3 +708,17 @@ more via slippage -> ~1.15 working expectation. ALL headline backtest %/PF are
 ~0.5p-spread optimistic; discount accordingly (0.5%-risk +90%/decade -> realistic
 ~+60-70%/decade / ~5%/yr at ~10% DD). Confirms the standing 'live is lower' caveat
 QUANTITATIVELY.
+
+## 2026-07-08 — 5hr plan P2: config re-validated at REALISTIC spread — PASSES
+Pip-space PF ablation vs added spread (from tradesx_ema13 entry/exit prices):
+config          +0p   +2p   +3p   n
+base           1.166 1.087 1.050 1629
++skipWed        1.232 1.149 1.109 1300
++knife          1.330 1.241 1.198 1234
++all3(+Dec)     1.361 1.271 1.228 1129
+CONCLUSION: every filter STILL lifts PF at every spread level -> filters are NOT
+low-spread artifacts, they genuinely help at real cost, and MORE so at higher
+spread (remove marginal trades spread sinks). Base at 3p = 1.05 (edge nearly
+gone); all-filters = 1.23 pip / ~1.17 money -> FILTERS ARE MOST OF THE EDGE at
+realistic spread. Config validated at honest costs. Next P3: cost reduction
+(avoid high-spread entry windows / rollover hr0).
