@@ -1,7 +1,7 @@
-; CatBa forward-demo preset — validated defaults, CONSERVATIVE 0.5% risk.
+; CatBa forward-demo preset — validated defaults, 2% risk (aggressive — user choice).
 ; Load in the EA inputs dialog: click Load, pick this file.
 lotSize=0.0
-riskPercentPerTrade=0.5
+riskPercentPerTrade=2.0
 useRiskPercentPerTrade=true
 emaPeriod=13
 checkEveryMinutes=12
