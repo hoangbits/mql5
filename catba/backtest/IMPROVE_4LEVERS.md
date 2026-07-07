@@ -166,3 +166,13 @@ triggered at :12/:24/:48 to later marks -> worse fills -> PF down, DD up. Fits
 cadence sweep (more checks 9-12/hr > fewer). The 5-mark grid is near-optimal
 because it catches the pullback at the FIRST/best moment. Cherry-picking marks
 by restriction FAILS. entryMarks input left in (default "" = all).
+
+## Tier-1 finalization (2026-07-08)
+minStop sweep (2% risk, full config): 30->net1080/PF1.269, 40->901/1.255,
+45->969/1.280, 50->1000/1.300. PF rises with wider stop (SL edge real) but
+quantity-for-quality tradeoff, net highest at 30. KEEP minStop=30 (edge already
+captured; more trades better for forward track record).
+DEPLOYABLE 0.5%-risk full-config run (the real number): net +90.5%/decade
+(~6-7%/yr), maxDD 9.5%, PF 1.32 (>2%'s 1.269 — less compounding distortion),
+worstYr -0.68%, 9/11 green. On $10k->~$19k. This is the sober deployment
+expectation (headline +508%/+1080% were 2% + compounding). Live will be lower.
