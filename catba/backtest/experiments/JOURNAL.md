@@ -636,3 +636,22 @@ CatBa's favor. Caveats: rough scaling (refStop too small inflates DD), 2yr only,
 one killzone def. Verdict: CatBa is GBPJPY-specific; gold+ICT needs a PURPOSE-
 BUILT killzone-liquidity strategy, not a CatBa retrofit. EA default symbol still
 GBPJPY; gold was input-only (no production change).
+
+## 2026-07-07 — Time+ICT losing-trade autopsy (GBPJPY) — "falling-knife" filter
+timeict_autopsy.py. Features per trade (no look-ahead): ICT premium/discount,
+liquidity-sweep-before-entry, killzone.
+KEY FINDING (liquidity sweep): trades entering AFTER price already swept
+yesterday's OPPOSITE extreme against the bias (buy-bias + today broke below
+yesterday's low, or sell-bias + broke above yesterday's high) = 87 trades,
+10% win, net -391,750, negative 10/11 yrs, both sides (BUY 13%/SELL 8%). Sound
+mechanism: CatBa's STALE daily bias fighting an ACTIVE intraday break (buying
+the falling knife). Real-time knowable -> tradeable.
+DISCIPLINE CAVEAT: 79% of these trades (69/87, -367k of -392k) are in 2016-17
+(Brexit choppy regime); OOS (2022-26) benefit only -22k, ~2-5 trades/yr recent.
+=> a TAIL-RISK cleanup (lower worst-case/DD), NOT a big forward return booster.
+ICT premium/discount is INVERTED for this trend system: 'aligned' (buy discount)
+wins 45%, 'counter' (buy premium=continuation) wins 57% -> ICT mean-reversion
+concepts don't apply to trend-following CatBa. Killzone: Asian-session entries
+(hr<8) carry the profit (win-both, +651k); London/NY mixed (not robust losers).
+STATUS: falling-knife filter is real+sound but modest forward benefit; optional
+implement (input-gated) + tester-validate if worst-case reduction wanted.
