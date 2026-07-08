@@ -761,3 +761,17 @@ be_optimizer flagged 0.2 as MODEL-OPTIMISTIC (M5 5-min replay caught BE triggers
 the real 12-min EA misses); tester shows 0.2 < 0.3. BE trigger already optimal;
 NO change. be_optimizer.py validated as a screening tool (direction right,
 tight-BE overstated -> always tester-confirm).
+
+## 2026-07-08 — NWOG (ICT New Week Opening Gap) research — no CatBa edge
+NWOG = gap Fri-close(4:59pm ET) to Sun-open(6pm ET); CE=50% midpoint = reactive
+level; magnet/fair-value-gap. GBPJPY: 555 weekly gaps, median 17.4p, 461>=5p.
+Magnet TRIVIAL: 98% CE-touch / 93% fill — but gap(17p) << weekly range(200-400p),
+so any near-open level touched by chance; NOT a real property.
+CatBa x NWOG (1349 trades, meaningful gaps): WITH/AGAINST gap both win; entry
+above/below CE both win — NO directional edge. Only SELL-in-bullgap LOSE-both
+(-82k) BUT confounded: BUY-in-beargap WINS +456k (breaks 'dont fight gap'
+mechanism). Root cause = broad SELL-SIDE WEAKNESS (BUYs +741k vs SELLs -175k in
+these weeks) = GBPJPY carry up-drift, not NWOG. VERDICT: NWOG is a real market
+phenomenon but a mean-reversion/level concept that doesnt fit trend CatBa (like
+premium/discount & sweeps). TANGENT worth separate look: SELL-side weakness /
+carry-drift asymmetry is a bigger potential lever than NWOG.
