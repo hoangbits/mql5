@@ -737,3 +737,15 @@ MONTE CARLO (all filters, 3p spread, 1129 trades, 58.5% win, +5.9p/trade):
 STRONG REC: deploy at 0.5% (9% DD), raise later only if forward confirms. Wrote
 MORNING_BRIEF.md. Config final & validated at honest costs; forward demo is the
 only remaining real information source.
+
+## 2026-07-08 — BE optimizer MODEL (be_optimizer.py) + findings
+Built a break-even optimizer: replays each trade's real M5 path under a
+beAtrMult grid, net of spread. Isolates BE effect (entry/SL/TP fixed).
+BUG fixed: add_pip_to_sl=0.2 (20p lock) > small triggers -> impossible fills
+faking 99% win; gated BE to be_dist>lock.
+RESULTS (net 3p): no-BE PF 1.30/16419p; 0.3(current) PF 2.37/22995p (BEST
+realistic); 0.4 1.45; 0.5 1.24; 1.0 1.27. 0.2 shows PF 6.9/95% but MODEL-
+OPTIMISTIC (M5 5-min replay vs EA's real 12-min BE cadence + intra-bar order
+favor tight BE). => BE helps; current 0.3 near-optimal & safe; 0.2 worth a
+TESTER check (real 12-min cadence) before trusting. Tradeoff: tight=many small
+wins, loose=few big wins. Model is reusable (edit grid/SPREAD_PIPS).
