@@ -789,3 +789,17 @@ CASE 3 STOP-HUNT: 89% losers 'recover' to entry in 24h = TRIVIAL (price wanders
 in 120p/day range; touch!=profit). Not an edge (same as NWOG magnet).
 NEXT: tester-validate long-only + skip-after-win (both need EA flag). Biggest
 leads since core filters IF they survive prescriptive test.
+
+## 2026-07-08 — ANTI-STREAK validated — KILLED (descriptive != prescriptive #4)
+Implemented skipAfterWin (2 bugs found: naive=deadlock 1 trade; static side-effect
+in gate = premature-consume 0 effect; correct = arm-on-win-close, consume-at-
+place_trade, block rest of day). TESTER (all filters, 2% risk):
+ baseline: PF 1.269, 1052 trades, net 1080%, DD 20.0%, worstYr -24.6%, 9/11 green
+ +skipWin: PF 1.280, 660 trades, net 359%, DD 23.4%, worstYr -10.4%, 10/11 green
+=> descriptive +931k/PF1.40 COLLAPSES to negligible PF +0.011 prescriptively;
+skipping 'after win' changes the sequence so kept trades aren't the descriptive
+'after-loss' winners. Removes 37% trades. NOT a real edge. Keep skipAfterWin=false.
+(Cuts worst-year -25->-10% but thats just 'trade less'=less risk, PF-neutral.)
+4TH descriptive!=prescriptive death (marks, hours, BE-0.2, anti-streak) — THE
+core discipline lesson. Long-only (CASE 1) is the only remaining creative lead
+that's CLEAN (per-trade independent, no sequence issue) -> worth validating.

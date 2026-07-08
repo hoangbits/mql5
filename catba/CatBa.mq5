@@ -104,6 +104,10 @@ input string   skipMonths="12";
 //--- are robust losers (time research). NOTE: hour-skip RE-ROUTES the daily
 //--- trade to a later hour, so effect != raw per-hour P&L. Empty = all hours.
 input string   skipHours="";
+//--- ANTI-STREAK ('cold hand'): skip a new entry when the LAST closed trade was
+//--- a win. CatBa's P&L is negatively autocorrelated — after-win trades lose
+//--- (PF 0.95), after-loss trades win (PF 1.40) (outside-the-box research).
+input bool     skipAfterWin=false;
 //--- how often (minutes) to run break-even management. NOTE: this was
 //--- previously a latent bug (used the 12-min entry cadence); making it
 //--- explicit. Slower checks outperform 1-min (don't lock BE too eagerly).
@@ -115,6 +119,10 @@ input bool     verboseLog=false;
 double distance_to_trigger_be = DistanceToTriggerBE;
 int EXPERT_MAGIC = 042024;
 double g_initial_equity = 0.0;   // captured in OnInit; base for riskOnInitialDeposit
+//--- anti-streak state (skip exactly one trade-day after each winning trade)
+datetime g_streak_processed_win = 0;   // close-time of the win we've armed for
+bool     g_streak_skip_armed    = false;
+datetime g_streak_skip_day      = 0;    // D1 open of the day we skipped
 
 datetime previousRange = 0;
 datetime previous_check_sl_range = 0;
@@ -271,8 +279,10 @@ void handle_new_tick()
       if(todayBias=="BUY"  && tLow<yLow)   knifeBlocked=true;
       if(todayBias=="SELL" && tHigh>yHigh) knifeBlocked=true;
      }
+   if(skipAfterWin) ArmStreakIfNewWin();
+   bool streakBlocked = (skipAfterWin && g_streak_skip_day==iTime(tradingSymbol,PERIOD_D1,0));
    if(!isAlreadyPlaceATradeToday() && todayBias != "NOBIAS" && !dowBlocked && !knifeBlocked
-      && !monthBlocked && !hourBlocked
+      && !monthBlocked && !hourBlocked && !streakBlocked
       && (!useTrailing || CountOpenPositions()==0))   // #1: no stacking while a runner is open
      {
       //--- Get the current Bid price
@@ -527,6 +537,27 @@ int CountOpenPositions()
    return c;
   }
 
+//--- anti-streak: ARM a one-day skip when a NEW winning trade has closed. Pure
+//--- side-effect-safe arming (idempotent per win); the skip is CONSUMED only at
+//--- actual trade placement (in place_trade), then the rest of the day is blocked.
+void ArmStreakIfNewWin()
+  {
+   if(!skipAfterWin) return;
+   HistorySelect(0, TimeCurrent());
+   for(int i=HistoryDealsTotal()-1; i>=0; i--)
+     {
+      ulong tk=HistoryDealGetTicket(i);
+      if(tk==0) continue;
+      if(HistoryDealGetInteger(tk,DEAL_MAGIC)!=EXPERT_MAGIC) continue;
+      if(HistoryDealGetInteger(tk,DEAL_ENTRY)!=DEAL_ENTRY_OUT) continue;
+      double p=HistoryDealGetDouble(tk,DEAL_PROFIT)+HistoryDealGetDouble(tk,DEAL_SWAP)
+               +HistoryDealGetDouble(tk,DEAL_COMMISSION);
+      datetime ct=(datetime)HistoryDealGetInteger(tk,DEAL_TIME);
+      if(p>0.0 && ct!=g_streak_processed_win) { g_streak_processed_win=ct; g_streak_skip_armed=true; }
+      return;   // only inspect the most recent closed deal
+     }
+  }
+
 bool isAlreadyPlaceATradeToday()
   {
    datetime today_start_time = iTime(tradingSymbol, PERIOD_D1, 0);
@@ -630,6 +661,14 @@ ENUM_ORDER_TYPE_FILLING GetFillingMode(string symbol)
 //+------------------------------------------------------------------+
 void place_trade(ENUM_ORDER_TYPE orderType,double new_stop_lossPrice,double takeProfitPrice)
   {
+   //--- anti-streak: consume the armed skip HERE (only when actually placing a
+   //--- trade), then block the rest of today.
+   if(skipAfterWin && g_streak_skip_armed)
+     {
+      g_streak_skip_armed=false;
+      g_streak_skip_day=iTime(tradingSymbol,PERIOD_D1,0);
+      return;
+     }
    MqlTradeRequest request = {};
    MqlTradeResult result = {};
    ZeroMemory(request);  // Initialize memory to zero
