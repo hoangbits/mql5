@@ -803,3 +803,16 @@ skipping 'after win' changes the sequence so kept trades aren't the descriptive
 4TH descriptive!=prescriptive death (marks, hours, BE-0.2, anti-streak) — THE
 core discipline lesson. Long-only (CASE 1) is the only remaining creative lead
 that's CLEAN (per-trade independent, no sequence issue) -> worth validating.
+
+## 2026-07-08 — LONG-ONLY validated — REAL (first creative lead to SURVIVE!)
+TESTER (all filters, 2% risk): baseline PF 1.269/DD20%/9-11green/net1080% ->
+longOnly PF 1.4155/DD15.5%/10-11green/net565%/580 trades. PF +0.15 = biggest
+single quality jump in the project; DD improved. TRANSLATED (unlike anti-streak)
+because dropping SELLs is per-trade INDEPENDENT (no sequence distortion).
+Mechanism: GBPJPY carry up-drift -> shorts net-neg. BUT REGIME BET: 2026 (GBP
+down) long-only -1039k vs baseline -374k (cant short, chops buying dips);
+worstYr -65% @2% (~-16% @0.5%). Huge in uptrend yrs (2024 +2.4M/2025 +3.9M/2020
++533k), bleeds in GBP-down. VERDICT: real risk-adjusted improvement but concentrates
+directional risk -> OPTION not default; good IF carry-up persists, safer at low
+risk. Added longOnly input (default false). CONTRAST anti-streak (died): clean
+per-trade filters translate, sequence-dependent ones dont.

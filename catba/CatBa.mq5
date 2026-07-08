@@ -108,6 +108,10 @@ input string   skipHours="";
 //--- a win. CatBa's P&L is negatively autocorrelated — after-win trades lose
 //--- (PF 0.95), after-loss trades win (PF 1.40) (outside-the-box research).
 input bool     skipAfterWin=false;
+//--- LONG-ONLY: skip SELL-bias entries. GBPJPY carry up-drift makes CatBa's
+//--- shorts net-negative over the decade (PF 0.96); BUY-only PF ~1.31
+//--- (outside-the-box research). Bets on carry-up regime continuing.
+input bool     longOnly=false;
 //--- how often (minutes) to run break-even management. NOTE: this was
 //--- previously a latent bug (used the 12-min entry cadence); making it
 //--- explicit. Slower checks outperform 1-min (don't lock BE too eagerly).
@@ -282,7 +286,7 @@ void handle_new_tick()
    if(skipAfterWin) ArmStreakIfNewWin();
    bool streakBlocked = (skipAfterWin && g_streak_skip_day==iTime(tradingSymbol,PERIOD_D1,0));
    if(!isAlreadyPlaceATradeToday() && todayBias != "NOBIAS" && !dowBlocked && !knifeBlocked
-      && !monthBlocked && !hourBlocked && !streakBlocked
+      && !monthBlocked && !hourBlocked && !streakBlocked && !(longOnly && todayBias=="SELL")
       && (!useTrailing || CountOpenPositions()==0))   // #1: no stacking while a runner is open
      {
       //--- Get the current Bid price
