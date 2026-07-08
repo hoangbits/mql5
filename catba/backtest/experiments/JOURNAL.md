@@ -775,3 +775,17 @@ these weeks) = GBPJPY carry up-drift, not NWOG. VERDICT: NWOG is a real market
 phenomenon but a mean-reversion/level concept that doesnt fit trend CatBa (like
 premium/discount & sweeps). TANGENT worth separate look: SELL-side weakness /
 carry-drift asymmetry is a bigger potential lever than NWOG.
+
+## 2026-07-08 — Outside-the-box: 3 cases (2 REAL leads)
+CASE 1 LONG-ONLY: SELLs net-NEGATIVE over decade (-113k, PF 0.959); BUY-only
++887k PF 1.305 WIN-both > full (+774k PF 1.137). GBPJPY carry up-drift punishes
+shorts. CLEAN (per-trade independent). Caveat: SELLs +129k OOS (2022 GBP crash)
+-> long-only bets carry-up regime. VALIDATE w/ full stack.
+CASE 2 ANTI-STREAK: P&L negatively autocorrelated. After-WIN: PF 0.95 LOSE-both
+(-170k); after-LOSS: PF 1.40 WIN-both (+931k); after-2-wins PF 0.81; after-2-loss
+1.31. 'Cold hand' — skip day-after-win. Mechanism: post-win trend exhausted.
+SEQUENCE-DEPENDENT -> must tester-validate (skip changes sequence).
+CASE 3 STOP-HUNT: 89% losers 'recover' to entry in 24h = TRIVIAL (price wanders
+in 120p/day range; touch!=profit). Not an edge (same as NWOG magnet).
+NEXT: tester-validate long-only + skip-after-win (both need EA flag). Biggest
+leads since core filters IF they survive prescriptive test.
