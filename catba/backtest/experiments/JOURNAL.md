@@ -749,3 +749,15 @@ OPTIMISTIC (M5 5-min replay vs EA's real 12-min BE cadence + intra-bar order
 favor tight BE). => BE helps; current 0.3 near-optimal & safe; 0.2 worth a
 TESTER check (real 12-min cadence) before trusting. Tradeoff: tight=many small
 wins, loose=few big wins. Model is reusable (edit grid/SPREAD_PIPS).
+
+## 2026-07-08 — BE tester validation: beAtrMult=0.3 CONFIRMED optimal
+Tester (real 12-min cadence, all filters, 2% risk):
+ beAtrMult  net%    PF     maxDD
+ 0.2        522.6   1.252  25.2%
+ 0.3(cur)   1080.5  1.269  20.0%   <- PEAK (best PF, lowest DD, best net)
+ 0.4        856.1   1.173  24.8%
+Both neighbors WORSE on PF and DD -> 0.3 is the true peak. Confirms the Python
+be_optimizer flagged 0.2 as MODEL-OPTIMISTIC (M5 5-min replay caught BE triggers
+the real 12-min EA misses); tester shows 0.2 < 0.3. BE trigger already optimal;
+NO change. be_optimizer.py validated as a screening tool (direction right,
+tight-BE overstated -> always tester-confirm).
