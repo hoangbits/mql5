@@ -94,6 +94,11 @@ input bool     dumpSweepFile=false;
 //--- (timeict_autopsy). Real-time knowable. Tail-risk cleanup — validated
 //--- (PF 1.21->1.24, maxDD unchanged), so ON by default.
 input bool     useFallingKnifeFilter=true;
+//--- USER TEST: skip when price already swept yesterday's SAME-side extreme in
+//--- the bias direction (sell-bias + today broke below y-low; buy-bias + today
+//--- broke above y-high) — 'exhaustion' idea. Dump says these are the BEST
+//--- trades (momentum confirmation) so expect this to HURT; validating.
+input bool     useSweepInBiasSkip=false;
 //--- skip entries in these calendar months (comma list, e.g. "12" = December).
 //--- CatBa bleeds in thin-liquidity windows; December is LOSE-both IS/OOS
 //--- (year-end holidays -> false/choppy trends). Validated: PF 1.24->1.27
@@ -283,10 +288,19 @@ void handle_new_tick()
       if(todayBias=="BUY"  && tLow<yLow)   knifeBlocked=true;
       if(todayBias=="SELL" && tHigh>yHigh) knifeBlocked=true;
      }
+   //--- USER TEST: sweep-IN-bias skip (mirror combination of falling-knife)
+   bool sweepBiasBlocked = false;
+   if(useSweepInBiasSkip && todayBias != "NOBIAS")
+     {
+      double yLo=iLow(tradingSymbol,PERIOD_D1,1),  yHi=iHigh(tradingSymbol,PERIOD_D1,1);
+      double tLo=iLow(tradingSymbol,PERIOD_D1,0),  tHi=iHigh(tradingSymbol,PERIOD_D1,0);
+      if(todayBias=="SELL" && tLo<yLo)   sweepBiasBlocked=true;
+      if(todayBias=="BUY"  && tHi>yHi)   sweepBiasBlocked=true;
+     }
    if(skipAfterWin) ArmStreakIfNewWin();
    bool streakBlocked = (skipAfterWin && g_streak_skip_day==iTime(tradingSymbol,PERIOD_D1,0));
    if(!isAlreadyPlaceATradeToday() && todayBias != "NOBIAS" && !dowBlocked && !knifeBlocked
-      && !monthBlocked && !hourBlocked && !streakBlocked && !(longOnly && todayBias=="SELL")
+      && !monthBlocked && !hourBlocked && !streakBlocked && !sweepBiasBlocked && !(longOnly && todayBias=="SELL")
       && (!useTrailing || CountOpenPositions()==0))   // #1: no stacking while a runner is open
      {
       //--- Get the current Bid price

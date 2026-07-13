@@ -826,3 +826,14 @@ IS -350k). SELL+swept-low PF 1.355 WIN-both; BUY+swept-high PF 1.227 mixed.
 exhaustion. Skipping removes best trades -> WORSE. Same ICT inversion as
 premium/discount & sweep-entries. Contrast falling-knife (sweep AGAINST bias =
 real breakdown) which IS correct & stays on. DON'T add this filter.
+
+## 2026-07-08 — Sweep-in-bias skip: REAL MT5 BACKTEST — CONFIRMED BAD
+Implemented useSweepInBiasSkip flag, ran tester (all filters, 2% risk):
+ baseline: net 1080%, PF 1.269, DD 20.0%, 1052 trades
+ +sweepBias: net 221%, PF 1.304, DD 55.7%(!), 557 trades
+=> net CRASHED, DD EXPLODED (removed the momentum-confirmation winners spread
+across decade -> lumpy 55% DD). PF up 1.30 is a red herring (compounding-distorted;
+real story = DD blowup + halved return). Confirms Python dump. Keep OFF.
+CALIBRATION: per-trade filters (sweep, falling-knife, long-only) -> dump PREDICTS
+tester correctly; sequence-dependent (anti-streak) -> only tester reliable.
+useSweepInBiasSkip default false.
