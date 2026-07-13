@@ -816,3 +816,13 @@ worstYr -65% @2% (~-16% @0.5%). Huge in uptrend yrs (2024 +2.4M/2025 +3.9M/2020
 directional risk -> OPTION not default; good IF carry-up persists, safer at low
 risk. Added longOnly input (default false). CONTRAST anti-streak (died): clean
 per-trade filters translate, sequence-dependent ones dont.
+
+## 2026-07-08 — User idea: skip sweep-IN-bias-direction (exhaustion) — WORSE
+User: SELL-bias + price already swept yesterday-low then rallied -> skip (and
+mirror BUY+swept-high). Exhaustion intuition. TESTED: the SKIP set (751 trades)
+is the BEST (PF 1.282, +640k, WIN-both); the KEEP set (878) is WEAKER (PF 1.039,
+IS -350k). SELL+swept-low PF 1.355 WIN-both; BUY+swept-high PF 1.227 mixed.
+=> sweep-in-bias = MOMENTUM CONFIRMATION for trend-continuation CatBa, not
+exhaustion. Skipping removes best trades -> WORSE. Same ICT inversion as
+premium/discount & sweep-entries. Contrast falling-knife (sweep AGAINST bias =
+real breakdown) which IS correct & stays on. DON'T add this filter.
